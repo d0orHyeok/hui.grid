@@ -6,6 +6,7 @@ import observable from './observable';
 import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
 import createInstance from '@/isntance';
+import { cn } from '@/data/className';
 
 class Grid implements HuiGrid {
   private _root: string;
@@ -39,8 +40,8 @@ class Grid implements HuiGrid {
       ariaAttr: { label: 'Hui Data Grid' },
     });
     $element.innerHTML = /*html*/ `
-      <div class="hui-grid-header" role="presentation"></div>
-      <div class="hui-grid-body" role="presentation"></div>
+      <div class="${cn('header')}" role="presentation"></div>
+      <div class="${cn('body')}" role="presentation"></div>
     `;
     parent.appendChild($element);
 
