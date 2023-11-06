@@ -14,6 +14,8 @@ export default class BodyView extends View {
               </table>
             </div>
           </div >
+          <div class="${cn('scrollbar')} hui-vscroll"></div>
+          <div class="${cn('scrollbar')} hui-hscroll"></div>
         </div>
       </div>
       <span role="presentation" class="${cn('nodata')}">No Data</span>

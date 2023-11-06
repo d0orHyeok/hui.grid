@@ -1,11 +1,12 @@
 import Controller from '@/mvc/Controller';
-import { BodyState } from './body.model';
+import BodyModel from './body.model';
 import { cn } from '@/data/className';
 import { isString } from '@/utils/common';
 import { isEqual } from 'lodash-es';
 import { DataObject } from '@t/index';
+import BodyView from './body.view';
 
-export default class BodyController extends Controller<BodyState> {
+export default class BodyController extends Controller<BodyModel, BodyView> {
   effect(): void {
     this._syncNodata();
     this._syncData();

@@ -9,10 +9,13 @@ import createInstance from '@/isntance';
 import { cn } from '@/data/className';
 import { HeaderController, HeaderModel, HeaderView } from '@/components/Header';
 import { BodyController, BodyModel, BodyView } from '@/components/Body';
+import { ScrollbarController, ScrollbarModel, ScrollbarView } from './components/Scrollbar';
 
 interface ComponentMap {
   Header: HeaderController;
   Body: BodyController;
+  HorizontalScrollbar: ScrollbarController;
+  VerticalScrollbar: ScrollbarController;
 }
 
 class Grid implements HuiGrid {
@@ -56,14 +59,24 @@ class Grid implements HuiGrid {
 
     // Render Grid
     const { source } = instance;
-    const rootSelector = `.${this._root}`;
-    const Header = new HeaderController(new HeaderModel(), new HeaderView(rootSelector, cn('header', true)));
+    const root = `.${this._root}`;
+    const Header = new HeaderController(new HeaderModel(), new HeaderView(root, cn('header', true)));
     const nodata = observable(() => opts().nodata);
-    const Body = new BodyController(new BodyModel({ nodata, source }), new BodyView(rootSelector, cn('body', true)));
+    const Body = new BodyController(new BodyModel({ nodata, source }), new BodyView(root, cn('body', true)));
+    const HorizontalScrollbar = new ScrollbarController(
+      new ScrollbarModel({ position: 'horizontal' }),
+      new ScrollbarView(root, cn('body', true) + ' .hui-hscroll')
+    );
+    const VerticalScrollbar = new ScrollbarController(
+      new ScrollbarModel({ position: 'vertical' }),
+      new ScrollbarView(root, cn('body', true) + ' .hui-vscroll')
+    );
 
     this.compoentMap = {
       Header,
       Body,
+      HorizontalScrollbar,
+      VerticalScrollbar,
     };
   }
 
