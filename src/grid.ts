@@ -7,12 +7,18 @@ import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
 import createInstance from '@/isntance';
 import { cn } from '@/data/className';
+import { HeaderController, HeaderModel, HeaderView } from './components/Header';
+
+interface ComponentMap {
+  Header: HeaderController;
+}
 
 class Grid implements HuiGrid {
   private _root: string;
   private _element: HTMLElement;
   private _options: Observable<OptGrid>;
   protected _instance: Instance;
+  private compoentMap: ComponentMap;
 
   /**
    * @param {Element | string} element Element or Selector
@@ -44,8 +50,15 @@ class Grid implements HuiGrid {
       <div class="${cn('body')}" role="presentation"></div>
     `;
     parent.appendChild($element);
-
     this._element = $element;
+
+    // Render Grid
+    const rootSelector = `.${this._root}`;
+    const Header = new HeaderController(new HeaderModel(), new HeaderView(rootSelector, cn('header', true)));
+
+    this.compoentMap = {
+      Header,
+    };
   }
 
   /**
