@@ -1,1 +1,19 @@
-console.log('hello')
+import HuiGrid from '@/index';
+
+const names = ['Alice', 'John', 'Simth', 'Jane', 'Brus', 'Saya', 'Minjun'];
+const nameSize = names.length;
+
+const grid = new HuiGrid('#app', {
+  columns: [],
+});
+
+const datas = Array.from({ length: 100 }, (_, i) => {
+  return {
+    key: `rowkey${i}`,
+    name: names[Math.floor(Math.random() * 100) % nameSize],
+    scroe: (i * 581236) % 900,
+    progress: Math.floor(Math.random() * 100 * 100) / 100,
+  };
+});
+
+grid.setData(datas);
