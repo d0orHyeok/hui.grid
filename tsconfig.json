@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ES2015",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "typeRoots": ["types"],
+    "declaration": true,
+    "declarationDir": "dist/types",
+    "allowJs": true,
+    "sourceMap": true,
+    "rootDir": "./src",
+    "outDir": "dist",
+    "useDefineForClassFields": true,
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Bundler mode */
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": false,
+
+    // Custom path
+    "paths": {
+      "@/*": ["./src/*"],
+      "@t/*": ["./types/*"]
+    }
+  },
+  "include": ["src", "types"]
+}

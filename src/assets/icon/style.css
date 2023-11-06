@@ -1,0 +1,36 @@
+@font-face {
+  font-family: 'hui-icon';
+  src: url('fonts/hui-icon.eot?cc0dpu');
+  src:
+    url('fonts/hui-icon.eot?cc0dpu#iefix') format('embedded-opentype'),
+    url('fonts/hui-icon.ttf?cc0dpu') format('truetype'),
+    url('fonts/hui-icon.woff?cc0dpu') format('woff'),
+    url('fonts/hui-icon.svg?cc0dpu#hui-icon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+[class^='hui-icon-'],
+[class*=' hui-icon-'] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'hui-icon' !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hui-icon-caret-right::before {
+  content: '\e900';
+}
+
+.hui-icon-caret-down::before {
+  content: '\e901';
+}
