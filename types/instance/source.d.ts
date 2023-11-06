@@ -1,12 +1,16 @@
 import { DataObject } from '@t/index';
 import { Observable } from '@t/observable';
 
-export interface SourceParams {
-  keyExpr?: string;
-}
+export type SourceParams = Observable<{
+  keyExpr: string | undefined;
+  datas: DataObject[] | undefined;
+}>;
 
 export interface Source {
-  store: Observable<DataObject[]>;
+  _key: string;
+  key: string;
+  readonly _changes: Observable<SourceChanges>;
+  readonly store: Observable<DataObject[]>;
   items: () => DataObject[];
   changes: () => SourceChangeItem[];
   setData: (datas: DataObject[]) => void;

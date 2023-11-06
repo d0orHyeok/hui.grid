@@ -2,12 +2,12 @@ import { Observable } from '@t/observable';
 import { create as createSource } from '@/isntance/source';
 import { OptGrid } from '@t/options';
 import { Instance } from '@t/instance';
+import observable from '@/observable';
 
 export default function createInstance(opts: Observable<OptGrid>): Instance {
-  const options = opts();
-  const { keyExpr } = options;
-
-  const source = createSource({ keyExpr });
+  // Create source
+  const sourceParam = observable(() => ({ keyExpr: opts().keyExpr, datas: opts().datas }));
+  const source = createSource(sourceParam);
 
   return { source };
 }

@@ -1,19 +1,14 @@
 import observable from '@/observable';
-import { generateId } from '@/utils/common';
+import { generateId, isNull, isUndefined } from '@/utils/common';
 import { DataObject } from '@t/index';
 import { Source, SourceChanges, SourceParams } from '@t/instance/source';
+import { isEqual } from 'lodash-es';
 
-export function create({ keyExpr = 'key' }: SourceParams): Source {
+const defaultKeyField = 'key';
+
+export function create(param: SourceParams): Source {
   const store = observable<DataObject[]>([]);
   const changes = observable<SourceChanges>({});
-
-  function insert(...datas: DataObject[]) {
-    datas.forEach((data) => {
-      const key = data[keyExpr] ?? generateId();
-      changes()[key] = { type: 'insert', key, data };
-    });
-    changes.publish();
-  }
 
   function update(key: string, data: Partial<DataObject>) {
     const exist = changes()[key] ?? {};
@@ -29,17 +24,48 @@ export function create({ keyExpr = 'key' }: SourceParams): Source {
   }
 
   const source: Source = {
+    _key: param().keyExpr ?? defaultKeyField,
+    get key() {
+      return this._key;
+    },
+    set key(key: string) {
+      this._key = key;
+    },
+    _changes: changes,
     store,
     items: () => store(),
     changes: () => Object.values(changes()),
-    setData: (datas: DataObject[]) => (changes({}), store(datas)),
-    insert,
+    setData(datas: DataObject[]) {
+      changes({});
+      const arr = store();
+      arr.length = 0;
+      datas.forEach((data) => {
+        const key = data[this.key];
+        if (isUndefined(key) || isNull(key)) throw new Error(`There's no key field in data object`);
+        arr.push({ ...data, key });
+      });
+      store.publish();
+    },
+    insert(...datas: DataObject[]) {
+      datas.forEach((data) => {
+        const key = data[this.key] ?? generateId();
+        changes()[key] = { type: 'insert', key, data };
+      });
+      changes.publish();
+    },
     update,
     remove,
     clear() {
       this.setData([]);
     },
   };
+
+  param.subscribe((cur, prev) => {
+    if (isEqual(cur, prev)) return;
+    const { keyExpr, datas } = cur;
+    source.key = keyExpr ?? defaultKeyField;
+    source.setData(datas ?? []);
+  });
 
   return source;
 }
