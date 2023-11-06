@@ -1,0 +1,120 @@
+:root {
+  --hui-grid-head-background: #f0f0f0;
+  --hui-grid-border-width: 1px;
+  --hui-grid-border-style: solid;
+  --hui-grid-border-color: #e8eaeb;
+  --hui-grid-progressbar-background: #2dc214;
+  --hui-grid-color: #333;
+}
+
+.hui-hidden {
+  display: none !important;
+}
+
+.hui-grid,
+.hui-grid * {
+  box-sizing: border-box;
+}
+
+.hui-grid {
+  position: relative;
+  cursor: default;
+  white-space: normal;
+  color: var(--hui-grid-color);
+  line-height: inherit;
+  background-color: #fff;
+}
+
+.hui-grid-container {
+  display: flex;
+  height: 100%;
+  min-width: inherit;
+  min-height: inherit;
+}
+
+.hui-grid :is(table, tr, td, .hui-grid-border) {
+  border-style: var(--hui-grid-border-style);
+  border-color: var(--hui-grid-border-color);
+  border-width: var(--hui-grid-border-width);
+}
+
+.hui-table-fixed {
+  table-layout: fixed;
+}
+
+.hui-grid-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  margin: 0;
+}
+
+.hui-grid-body {
+  display: flex;
+}
+
+.hui-grid-scroll-wrapper {
+  position: relative;
+  flex: 1;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+}
+
+.hui-grid-scroll-container {
+  touch-action: none;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+}
+
+.hui-grid-scroll-content {
+  position: relative;
+  overflow-anchor: none;
+  min-width: 100%;
+  min-height: 100%;
+  display: block;
+  float: left;
+}
+
+.hui-grid-scroll-content::before,
+.hui-grid-scroll-content::after {
+  display: table;
+  content: '';
+  line-height: 0;
+}
+
+.hui-grid-scroll-content::after {
+  clear: both;
+}
+
+.hui-grid-table-content {
+  min-height: 100%;
+  overflow-anchor: none;
+  position: relative;
+}
+
+.hui-grid-nodata {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  text-align: center;
+  transform: translate(-50%, -50%);
+}
+
+.hui-scrollbar {
+  position: absolute;
+  pointer-events: auto;
+}
+
+.hui-scrollbar-horizontal {
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+.hui-scrollbar-vertical {
+  top: 0;
+  right: 0;
+  height: 100%;
+}
