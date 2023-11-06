@@ -1,10 +1,10 @@
 import Model from '@/mvc/Model';
 import View from '@/mvc/View';
 
-export default class Controller<P extends Object, E extends HTMLElement = HTMLElement> {
-  model: Model<P>;
-  view: View<E>;
-  constructor(model: Model<P>, view: View<E>) {
+export default class Controller<M extends Model = Model, V extends View = View> {
+  model: M;
+  view: V;
+  constructor(model: M, view: V) {
     this.model = model;
     this.view = view;
     view.render();
