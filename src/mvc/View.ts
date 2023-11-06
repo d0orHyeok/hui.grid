@@ -5,14 +5,18 @@ import { EvtListener } from '@t/html';
  * @template {HTMLElement} T
  */
 export default class View<T extends HTMLElement = HTMLElement> {
+  #isRender: boolean;
   private root: string;
   private target: string;
-  private $new: Element | null;
 
   constructor(root: string = '', target: string = '') {
+    this.#isRender = false;
     this.target = target;
-    this.$new = null;
     this.root = root;
+  }
+
+  get isRender() {
+    return this.#isRender;
   }
 
   /**
@@ -31,22 +35,15 @@ export default class View<T extends HTMLElement = HTMLElement> {
   }
 
   /**
-   * Create Virtual DOM
-   */
-  publish() {
-    const $target = this.$target;
-    if (!$target) return;
-    this.$new = $target.cloneNode(true) as T;
-    this.$new.innerHTML = this.template();
-  }
-
-  /**
    * Render, replace DOM content to virtual DOM content
    */
   render() {
-    if (!this.$new) this.publish();
-    if (!this.$new) return;
-    this.$target?.replaceWith(this.$new);
+    const $target = this.$target;
+    if (!$target) return;
+    const $new = $target.cloneNode(true) as T;
+    $new.innerHTML = this.template();
+    this.$target?.replaceWith($new);
+    this.#isRender = true;
   }
 
   /**

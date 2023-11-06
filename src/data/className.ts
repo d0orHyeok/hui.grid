@@ -3,6 +3,9 @@ const classMap = {
   body: 'hui-grid-body',
   nodata: 'hui-grid-nodata',
   table: 'hui-grid-table',
+  scrollWrapper: 'hui-grid-scroll-wrapper',
+  scrollContainer: 'hui-grid-scroll-container',
+  scrollContent: 'hui-grid-scroll-content',
 };
 
 const cn = (target: keyof typeof classMap, selector?: boolean) => (selector ? '.' : '') + classMap[target];

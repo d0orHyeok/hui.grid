@@ -7,10 +7,12 @@ import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
 import createInstance from '@/isntance';
 import { cn } from '@/data/className';
-import { HeaderController, HeaderModel, HeaderView } from './components/Header';
+import { HeaderController, HeaderModel, HeaderView } from '@/components/Header';
+import { BodyController, BodyModel, BodyView } from '@/components/Body';
 
 interface ComponentMap {
   Header: HeaderController;
+  Body: BodyController;
 }
 
 class Grid implements HuiGrid {
@@ -53,11 +55,15 @@ class Grid implements HuiGrid {
     this._element = $element;
 
     // Render Grid
+    const { source } = instance;
     const rootSelector = `.${this._root}`;
     const Header = new HeaderController(new HeaderModel(), new HeaderView(rootSelector, cn('header', true)));
+    const nodata = observable(() => opts().nodata);
+    const Body = new BodyController(new BodyModel({ nodata, source }), new BodyView(rootSelector, cn('body', true)));
 
     this.compoentMap = {
       Header,
+      Body,
     };
   }
 
