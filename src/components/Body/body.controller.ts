@@ -1,6 +1,6 @@
 import Controller from '@/mvc/Controller';
 import BodyModel from './body.model';
-import { cn } from '@/data/className';
+import { cn } from '@/healpers/className';
 import { isString } from '@/utils/common';
 import { isEqual } from 'lodash-es';
 import { DataObject } from '@t/index';

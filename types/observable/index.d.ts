@@ -1,5 +1,5 @@
 export interface ObservableConstructor {
-  <T = any>(arg: T | ((arg: T) => T)): Observable<T>;
+  <T = any>(arg: T | (() => T)): Observable<T>;
   <T = any, P = any>(callback: (...args: P[]) => T, ...arg: P[]): Observable<T>;
 }
 

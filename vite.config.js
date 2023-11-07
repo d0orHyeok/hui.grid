@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
-import autoprefixer from 'autoprefixer';
-import cssnano from 'cssnano';
+import { __dirname, postcsssPlugins } from './options';
 
 export default defineConfig(({ command, mode, ssrBuild }) => {
   if (command === 'serve') {
@@ -18,7 +17,7 @@ export default defineConfig(({ command, mode, ssrBuild }) => {
     },
     css: {
       postcss: {
-        plugins: [autoprefixer, cssnano],
+        plugins: postcsssPlugins,
       },
     },
   };

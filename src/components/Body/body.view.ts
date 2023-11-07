@@ -1,4 +1,4 @@
-import { cn } from '@/data/className';
+import { cn } from '@/healpers/className';
 import View from '@/mvc/View';
 
 export default class BodyView extends View {

@@ -6,7 +6,7 @@ import observable from './observable';
 import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
 import createInstance from '@/isntance';
-import { cn } from '@/data/className';
+import { cn } from '@/healpers/className';
 import { HeaderController, HeaderModel, HeaderView } from '@/components/Header';
 import { BodyController, BodyModel, BodyView } from '@/components/Body';
 import { ScrollbarController, ScrollbarModel, ScrollbarView } from './components/Scrollbar';
@@ -78,8 +78,6 @@ class HuiGrid implements IHuiGrid {
       HorizontalScrollbar,
       VerticalScrollbar,
     };
-
-    console.log(this.compoentMap);
   }
 
   /**

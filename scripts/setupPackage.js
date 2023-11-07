@@ -1,8 +1,7 @@
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { resolve } from 'path';
+import { __dirname } from '../options';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
 const root = resolve(__dirname, '..');
 
 function main() {
