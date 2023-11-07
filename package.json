@@ -26,9 +26,10 @@
   },
   "scripts": {
     "dev": "vite --port 7777",
-    "clean": "node ./scripts/clean.js",
-    "build": "(npm run clean) && (npm run build:rollup) && (node ./scripts/erase.js)",
+    "clean": "node scripts/clean.js",
+    "build": "(npm run clean) && (npm run build:rollup) && (node scripts/erase.js)",
     "build:rollup": "rollup --config",
+    "build-publish": "(npm run build) && (node scripts/setupPackage.js) && cd dist && npm publish",
     "lint:scripts": "eslint . --ext .ts,.js",
     "lint:styles": "stylelint ./**/*.{css,scss}",
     "format:scripts": "prettier . --write",
@@ -71,9 +72,8 @@
     "postcss-import": "^15.1.0",
     "postcss-preset-env": "^9.3.0",
     "prettier": "3.0.0",
-    "rollup": "^3.28.0",
+    "rollup": "^3.29.4",
     "rollup-plugin-dts": "^6.1.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-typescript2": "^0.35.0",
     "stylelint": "^15.10.2",
@@ -87,9 +87,6 @@
   },
   "dependencies": {
     "dayjs": "^1.11.9",
-    "lodash-es": "^4.17.21"
-  },
-  "peerDependencies": {
     "lodash-es": "^4.17.21"
   }
 }
