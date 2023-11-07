@@ -1,4 +1,5 @@
 import HuiGrid from '@/index';
+import '@/style/index.css';
 
 const names = ['Alice', 'John', 'Simth', 'Jane', 'Brus', 'Saya', 'Minjun'];
 const nameSize = names.length;
