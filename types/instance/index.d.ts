@@ -1,5 +1,5 @@
-import { Source } from '@t/source';
+import { Source } from '@t/instance/source';
 
-interface Instance {
+export interface Instance {
   source: Source;
 }
