@@ -4,7 +4,7 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "typeRoots": ["types"],
     "declaration": true,
-    "declarationDir": "dist/types",
+    "declarationDir": "dist/es/types",
     "allowJs": true,
     "sourceMap": true,
     "rootDir": "./src",
@@ -13,24 +13,22 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
-
-    /* Bundler mode */
+    "importHelpers": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-
-    /* Linting */
+    "esModuleInterop": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": false,
-
-    // Custom path
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "@t/*": ["./types/*"]
+      "@/*": ["src/*"],
+      "@t/*": ["types/*"]
     }
   },
-  "include": ["src", "types"]
+  "include": ["src/**/*.ts", "types/**/*"],
+  "exclude": ["dist", "node_modules"]
 }

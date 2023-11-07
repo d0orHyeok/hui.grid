@@ -1,21 +1,34 @@
 {
-  "name": "dhui-grid",
+  "name": "hui-grid",
   "private": true,
   "version": "1.0.0",
-  "description": "d0oR Hyeok(DH) UI Grid : Data grid, 회사에서 개발하다가 화나서 만들기시작한 ....",
+  "description": "Vanilla javascript data grid",
   "type": "module",
-  "main": "./dist/dhui-grid.js",
-  "module": "./dist/es/dhui-grid.js",
-  "types": "types/index.d.ts",
+  "main": "dist/hui-grid.js",
+  "module": "dist/es/hui-grid.js",
+  "types": "dist/index.d.ts",
+  "keywords": [
+    "grid",
+    "datagrid",
+    "vanilla",
+    "hui"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d0orHyeok/hui.grid.git"
+  },
   "exports": {
     ".": {
-      "require": "./dist/dhui-grid.js",
-      "import": "./dist/es/dhui-grid.mjs"
+      "require": "./dist/hui-grid.js",
+      "import": "./dist/es/hui-grid.js"
     }
   },
   "scripts": {
     "dev": "vite --port 7777",
-    "build": "rollup --config",
+    "clean": "node ./scripts/clean.js",
+    "build": "(npm run clean) && (npm run build:rollup) && (node ./scripts/erase.js)",
+    "build:rollup": "rollup --config",
     "lint:scripts": "eslint . --ext .ts,.js",
     "lint:styles": "stylelint ./**/*.{css,scss}",
     "format:scripts": "prettier . --write",
@@ -28,13 +41,17 @@
   },
   "devDependencies": {
     "@babel/core": "^7.22.10",
+    "@babel/plugin-transform-runtime": "^7.23.2",
     "@babel/preset-env": "^7.22.10",
     "@babel/preset-flow": "^7.22.5",
     "@babel/preset-typescript": "^7.22.5",
+    "@babel/runtime": "^7.23.2",
+    "@rollup/plugin-alias": "^5.0.1",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-commonjs": "^25.0.4",
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.1.0",
+    "@rollup/plugin-terser": "^0.4.4",
     "@types/lodash-es": "^4.17.9",
     "@types/node": "^20.4.9",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
@@ -50,8 +67,13 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
     "postcss": "^8.4.27",
+    "postcss-custom-properties": "^13.3.2",
+    "postcss-import": "^15.1.0",
+    "postcss-preset-env": "^9.3.0",
     "prettier": "3.0.0",
     "rollup": "^3.28.0",
+    "rollup-plugin-dts": "^6.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
     "rollup-plugin-typescript2": "^0.35.0",
     "stylelint": "^15.10.2",
@@ -65,6 +87,9 @@
   },
   "dependencies": {
     "dayjs": "^1.11.9",
+    "lodash-es": "^4.17.21"
+  },
+  "peerDependencies": {
     "lodash-es": "^4.17.21"
   }
 }
