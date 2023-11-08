@@ -1,0 +1,161 @@
+import { alignMap } from '@/healpers/dataMap';
+import observable from '@/observable';
+import { arrayToMap, isString, isUndefined, mapProp } from '@/utils/common';
+import {
+  Column,
+  ColumnInfo,
+  ColumnInfoData,
+  GroupColumnInfo,
+  ColumnHeaderInfos,
+  ColumnHeaderInfoData,
+} from '@t/instance/column';
+import { Observable } from '@t/observable';
+import { OptColumn, OptCommonColumn, OptGrid } from '@t/options';
+
+const getDepth = (items: any[]): number =>
+  !Array.isArray(items) ? 0 : 1 + Math.max(...items.map((item) => getDepth(item.columns)));
+
+function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
+  const {
+    align,
+    allowEditing,
+    allowFiltering,
+    allowGrouping,
+    booleanText,
+    calculateCellValue,
+    cellTemplate,
+    className,
+    dataField = '',
+    dataType,
+    displayText,
+    minWidth,
+    setCellValue,
+    vertialAlign = 'middle',
+    visible = true,
+    width,
+  } = column;
+
+  const columnInfo = {
+    ...data,
+    align: align ?? (!isUndefined(dataType) ? alignMap[dataType] : undefined),
+    allowEditing,
+    allowFiltering,
+    allowGrouping,
+    booleanText,
+    calculateCellValue,
+    cellTemplate,
+    className,
+    dataField,
+    dataType,
+    displayText,
+    minWidth,
+    setCellValue,
+    vertialAlign,
+    visible,
+    width,
+  };
+  return columnInfo;
+}
+
+function createHeaderColumnInfo(column: OptColumn, data: ColumnHeaderInfoData): ColumnHeaderInfos {
+  const { allowResizing, caption, className, dataField, visible = true, width, headerCellTemplate, minWidth } = column;
+
+  const columnInfo = {
+    ...data,
+    allowResizing,
+    caption: caption ?? dataField ?? '',
+    className,
+    headerCellTemplate,
+    minWidth,
+    visible,
+    width,
+  };
+  return columnInfo;
+}
+
+function createGroupColumnInfo(column: OptColumn): GroupColumnInfo {
+  const { booleanText, dataField = '', dataType, groupCellTemplate, groupIndex, groupValue, visible = true } = column;
+  return { booleanText, dataField, dataType, groupCellTemplate, groupIndex, groupValue, visible };
+}
+
+/**
+ * Create columnInfos
+ */
+function classifiyOptColumn(optColumns: OptColumn[]) {
+  const rowSize = getDepth(optColumns);
+  const duplicatedSet: Set<string> = new Set(); // for check data field
+  const colindexMap: Map<number, number> = new Map(); // for make column header index
+  const optDataColumns: OptColumn[] = [];
+  const optGroupColumns: OptColumn[] = [];
+
+  const createAndClassification = (optCols: OptColumn[] | undefined, depth: number = 1) => {
+    if (!Array.isArray(optCols)) return undefined;
+    return optCols.map((optCol) => {
+      // Check data field
+      const { dataField, groupIndex } = optCol;
+      if (isString(dataField)) {
+        if (duplicatedSet.has(dataField)) throw new Error(`DataField "${dataField}" is duplicated`);
+        duplicatedSet.add(dataField);
+        if (groupIndex) optGroupColumns.push(optCol); // if opt column has 'groupIndex' push column
+      }
+      // Make Column Index
+      const colindex = (colindexMap.get(depth) ?? 0) + 1;
+      colindexMap.set(depth, colindex);
+      // Make col & row span
+      const colSpan = optCol.columns?.length ?? 1;
+      const rowSpan = rowSize - depth + 1;
+      // Create column info
+      const data = { colSpan, rowSpan, colindex };
+      const headerColumnInfo = createHeaderColumnInfo(optCol, data);
+      const children = createAndClassification(optCol.columns, depth + 1);
+      headerColumnInfo.columns = children;
+      if (!Array.isArray(children)) optDataColumns.push(optCol);
+      return headerColumnInfo;
+    });
+  };
+
+  const columnHeaderInfos = createAndClassification(optColumns) ?? [];
+  const columnInfos = optDataColumns.map((optCol, index) => createColumnInfo(optCol, { colindex: index + 1 }));
+  const groupColumnInfos = optGroupColumns.map((optCol) => createGroupColumnInfo(optCol));
+  return { columnInfos, groupColumnInfos, columnHeaderInfos, rowSize };
+}
+
+/**
+ * Create column instance
+ */
+export function create(opts: Observable<OptGrid>): Column {
+  const optColumns = opts().columns;
+  const commonOptions: Observable<OptCommonColumn> = observable(() => {
+    const { allowColumnResizing, columnMinWidth, columnWidth, dateFormat } = opts();
+    const obj: OptCommonColumn = {
+      allowColumnResizing: allowColumnResizing ?? true,
+      columnMinWidth,
+      columnWidth,
+      dateFormat: dateFormat ?? 'YYYY-MM-DD',
+    };
+    return obj;
+  });
+
+  const { columnInfos, columnHeaderInfos, groupColumnInfos, rowSize } = classifiyOptColumn(optColumns);
+
+  const column: Column = {
+    commonOptions,
+    columnInfos,
+    columnHeaderInfos,
+    groupColumnInfos,
+    headerRowCount: rowSize,
+    get columnDataFields() {
+      return mapProp(this.columnInfos, 'dataField');
+    },
+    get columnInfoMap() {
+      return arrayToMap(this.columnInfos, 'dataField');
+    },
+    get visibleColumnInfos() {
+      return this.columnInfos.filter(({ visible }) => visible);
+    },
+    get visibleGroupColumnInfo() {
+      return this.groupColumnInfos.filter(({ visible }) => visible);
+    },
+  };
+  return column;
+}

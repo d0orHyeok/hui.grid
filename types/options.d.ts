@@ -1,6 +1,6 @@
 import { DataObject } from '@t/index';
 
-export interface OptGrid extends OptColumnCommon {
+export interface OptGrid extends Partial<OptCommonColumn> {
   /** Specifies the shortcut key that sets focus on the grid component. */
   accessKey?: string;
   // allowColumnResizing?: boolean;
@@ -33,9 +33,9 @@ export interface OptGrid extends OptColumnCommon {
   width?: string | number;
 }
 
-export interface OptColumnCommon {
+export interface OptCommonColumn {
   /** Specifies whether a user can resize columns. Defaults: true */
-  allowColumnResizing?: boolean;
+  allowColumnResizing: boolean;
   /**
    * Each column's min-width
    * @description the column's width in pixels.
@@ -51,7 +51,7 @@ export interface OptColumnCommon {
    * Date display format, Defaults: 'YYYY-MM-DD'
    * @see https://day.js.org/docs/en/display/format
    */
-  dateFormat?: string;
+  dateFormat: string;
 }
 
 export type HorizontalAlign = 'center' | 'left' | 'right';
@@ -79,7 +79,7 @@ export interface OptColumn {
   /** Specifies a CSS class */
   className?: string;
   /** An array of grid columns. */
-  columns?: OptColumn;
+  columns?: OptColumn[];
   /** Binds the column to a field of the source */
   dataField?: string;
   /** Casts column values to a specific data type. */
@@ -89,7 +89,7 @@ export interface OptColumn {
   /** Specifies a custom template for group cells */
   groupCellTemplate?: Function; // Experimental
   /** Sets custom column values used to group grid records. */
-  groupValue?: GroupValue;
+  groupValue?: string | GroupValueFunction;
   /** Specifies the index of a column when grid records are grouped by the values of this column. */
   groupIndex?: number;
   /** Specifies a custom template for column headers. */
@@ -101,6 +101,8 @@ export interface OptColumn {
   minWidth?: number;
   /** Specifies a function to be invoked after the user has edited a cell value, but before it is saved in the data source. */
   setCellValue?: SetCellValue;
+  /** Vertical aligns the content of the column */
+  vertialAlign?: VerticalAlign;
   /** Specifies whether the column is visible, that is, occupies space in the table. */
   visible?: boolean;
   /**
@@ -111,7 +113,7 @@ export interface OptColumn {
   width?: number | string;
 }
 
-export type DataType = 'string' | 'number' | 'boolaen' | 'date' | 'progress';
+export type DataType = 'string' | 'number' | 'boolean' | 'date' | 'progress';
 export type DisplayText = (cellInfo: { value: any; valueText: string }) => string;
-export type GroupValue = string | ((rowData: DataObject) => any);
+export type GroupValueFunction = (rowData: DataObject) => any;
 export type SetCellValue = (newData: DataObject, value: any, rowData: DataObject) => void;

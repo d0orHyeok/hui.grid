@@ -14,7 +14,11 @@ const datas = Array.from({ length: 100 }, (_, i) => {
 });
 
 const grid = new HuiGrid('#app', {
-  columns: [],
+  columns: [
+    { dataField: 'key' },
+    { dataField: 'name' },
+    { caption: 'group', columns: [{ dataField: 'scroe' }, { dataField: 'progress' }] },
+  ],
 });
 
 grid.setData(datas);
