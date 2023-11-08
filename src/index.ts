@@ -57,9 +57,9 @@ class HuiGrid implements IHuiGrid {
     const root = `.${this._root}`;
     const instance = createInstance(opts);
     this._instance = instance;
-    const { source } = instance;
 
     // Render Grid
+    const { source } = instance;
     const Header = new HeaderController(new HeaderModel(), new HeaderView(root, cn('header', true)));
     const nodata = observable(() => opts().nodata);
     const Body = new BodyController(new BodyModel({ nodata, source }), new BodyView(root, cn('body', true)));

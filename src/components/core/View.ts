@@ -1,5 +1,5 @@
 import { off, on } from '@/utils/dom';
-import { EvtListener } from '@t/html';
+import { CSSProperties, EvtListener } from '@t/html';
 
 /**
  * @template {HTMLElement} T
@@ -79,5 +79,10 @@ export default class View<T extends HTMLElement = HTMLElement> {
     if (!$el) return;
     const evt = new CustomEvent<O>(eventType, { detail: data });
     $el.dispatchEvent(evt);
+  }
+
+  style(style: CSSProperties) {
+    // @ts-ignore
+    Object.entries(style).forEach((key, value) => (this.$target.style[key] = value));
   }
 }

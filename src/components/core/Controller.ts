@@ -8,7 +8,7 @@ export default class Controller<M extends Model = Model, V extends View = View> 
     this.model = model;
     this.view = view;
     view.render();
-    this.effect();
+    this.init();
   }
 
   get isRender() {
@@ -44,7 +44,7 @@ export default class Controller<M extends Model = Model, V extends View = View> 
     } else $el.classList.remove('.hui-hidden');
   }
 
-  effect() {}
+  init() {}
 
   render() {
     this.view.render();

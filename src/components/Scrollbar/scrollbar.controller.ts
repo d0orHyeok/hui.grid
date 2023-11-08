@@ -3,7 +3,7 @@ import ScrollbarModel from './scrollbar.model';
 import ScrollbarView from './scrollbar.view';
 
 export default class ScrollbarController extends Controller<ScrollbarModel, ScrollbarView> {
-  effect(): void {
+  init(): void {
     this.view.setPosition(this.model.state.position);
   }
 }

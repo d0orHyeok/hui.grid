@@ -7,7 +7,7 @@ import { DataObject } from '@t/index';
 import BodyView from './body.view';
 
 export default class BodyController extends Controller<BodyModel, BodyView> {
-  effect(): void {
+  init(): void {
     this._syncNodata();
     this._syncData();
   }
