@@ -1,5 +1,5 @@
-import Model from '@/mvc/Model';
-import View from '@/mvc/View';
+import Model from '@/components/core/Model';
+import View from '@/components/core/View';
 
 export default class Controller<M extends Model = Model, V extends View = View> {
   model: M;

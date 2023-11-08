@@ -1,5 +1,5 @@
 import { cn } from '@/healpers/className';
-import View from '@/mvc/View';
+import { View } from '@/components/core';
 
 export default class BodyView extends View {
   template(): string {

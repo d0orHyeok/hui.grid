@@ -1,4 +1,4 @@
-import Controller from '@/mvc/Controller';
+import { Controller } from '@/components/core';
 import BodyModel from './body.model';
 import { cn } from '@/healpers/className';
 import { isString } from '@/utils/common';

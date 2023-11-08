@@ -1,5 +1,5 @@
 import { cn } from '@/healpers/className';
-import View from '@/mvc/View';
+import { View } from '@/components/core';
 import { ScrollbarPosition } from './scrollbar.model';
 
 const positionList = ['vertical', 'horizontal'];

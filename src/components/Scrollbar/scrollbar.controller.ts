@@ -1,4 +1,4 @@
-import Controller from '@/mvc/Controller';
+import { Controller } from '@/components/core';
 import ScrollbarModel from './scrollbar.model';
 import ScrollbarView from './scrollbar.view';
 

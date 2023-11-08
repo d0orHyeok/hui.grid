@@ -1,4 +1,4 @@
-import Model from '@/mvc/Model';
+import { Model } from '@/components/core';
 import { Source } from '@t/instance/source';
 import { Observable } from '@t/observable';
 
