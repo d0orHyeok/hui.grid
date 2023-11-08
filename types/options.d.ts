@@ -17,12 +17,19 @@ export interface OptGrid extends Partial<OptCommonColumn> {
   focusedRowIndex?: number;
   /** Specifies initially or currently focused grid row's key. */
   focusedRowKey?: number;
-  /** Specifies the grid component's height. */
+  /**
+   * Specifies the grid component's height.
+   */
   height?: string | number;
   /** Specifies the key property that provide key values to access data items. Each key value must be unique.  */
   keyExpr?: string;
   /** Specifies a text string shown when the DataGrid does not display any data. */
   nodata?: string | Element;
+  /**
+   * Specifies the row compoenet's height (pixel)
+   * @description Default: 30, minmum value 20
+   */
+  rowHeight?: number;
   /** Allows you to select rows or determine which rows are selected.  */
   selectedRowKey?: string[];
   /** Specifies the selection mode. */

@@ -4,13 +4,16 @@ import { Instance } from '@t/instance';
 import observable from '@/observable';
 import { create as createSource } from '@/isntance/source';
 import { create as createColumn } from '@/isntance/column';
+import { create as createDemension } from '@/isntance/demension';
 
 export default function createInstance(opts: Observable<OptGrid>): Instance {
+  // Create column
+  const column = createColumn(opts);
+  // Create Demension
+  const demension = createDemension({ column, opts });
   // Create source
   const sourceParam = observable(() => ({ keyExpr: opts().keyExpr, datas: opts().datas }));
   const source = createSource(sourceParam);
-  // Create column
-  const column = createColumn(opts);
 
-  return { column, source };
+  return { column, demension, source };
 }

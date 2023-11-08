@@ -39,10 +39,6 @@ class HuiGrid implements IHuiGrid {
     const opts = observable(options);
     this._options = opts;
 
-    // Create Instance
-    const instance = createInstance(opts);
-    this._instance = instance;
-
     // Create grid base element
     this._root = `hui-${generateId()}`;
     const $element = createNode('div', {
@@ -57,9 +53,13 @@ class HuiGrid implements IHuiGrid {
     parent.appendChild($element);
     this._element = $element;
 
-    // Render Grid
-    const { source } = instance;
+    // Create Instance
     const root = `.${this._root}`;
+    const instance = createInstance(opts);
+    this._instance = instance;
+    const { source } = instance;
+
+    // Render Grid
     const Header = new HeaderController(new HeaderModel(), new HeaderView(root, cn('header', true)));
     const nodata = observable(() => opts().nodata);
     const Body = new BodyController(new BodyModel({ nodata, source }), new BodyView(root, cn('body', true)));
