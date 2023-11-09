@@ -1,12 +1,13 @@
 import { alignMap } from '@/healpers/dataMap';
 import observable from '@/observable';
 import { arrayToMap, isString, isUndefined, mapProp } from '@/utils/common';
+import { DataObject } from '@t/index';
 import {
   Column,
   ColumnInfo,
   ColumnInfoData,
   GroupColumnInfo,
-  ColumnHeaderInfos,
+  ColumnHeaderInfo,
   ColumnHeaderInfoData,
 } from '@t/instance/column';
 import { Observable } from '@t/observable';
@@ -57,7 +58,7 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
   return columnInfo;
 }
 
-function createHeaderColumnInfo(column: OptColumn, data: ColumnHeaderInfoData): ColumnHeaderInfos {
+function createHeaderColumnInfo(column: OptColumn, data: ColumnHeaderInfoData): ColumnHeaderInfo {
   const { allowResizing, caption, className, dataField, visible = true, width, headerCellTemplate, minWidth } = column;
 
   const columnInfo = {
@@ -102,10 +103,11 @@ function classifiyOptColumn(optColumns: OptColumn[]) {
       const colindex = (colindexMap.get(depth) ?? 0) + 1;
       colindexMap.set(depth, colindex);
       // Make col & row span
-      const colSpan = optCol.columns?.length ?? 1;
-      const rowSpan = rowSize - depth + 1;
+      const childLength = optCol.columns?.length;
+      const colSpan = childLength ?? 1;
+      const rowSpan = childLength ? 1 : rowSize - depth + 1;
       // Create column info
-      const data = { colSpan, rowSpan, colindex };
+      const data = { colSpan, rowSpan, colindex, rowindex: depth };
       const headerColumnInfo = createHeaderColumnInfo(optCol, data);
       const children = createAndClassification(optCol.columns, depth + 1);
       headerColumnInfo.columns = children;
@@ -149,6 +151,18 @@ export function create(opts: Observable<OptGrid>): Column {
     },
     get columnInfoMap() {
       return arrayToMap(this.columnInfos, 'dataField');
+    },
+    get indexColumnHeaderInfoMap() {
+      const map: DataObject<ColumnHeaderInfo[]> = {};
+      const add = (datas: any[]) => {
+        datas.forEach((item) => {
+          if (isUndefined(map[item.rowindex])) map[item.rowindex] = [];
+          map[item.rowindex].push(item);
+          if (Array.isArray(item.columns)) add(item.columns);
+        });
+      };
+      add(this.columnHeaderInfos);
+      return map;
     },
     get visibleColumnInfos() {
       return this.columnInfos.filter(({ visible }) => visible);

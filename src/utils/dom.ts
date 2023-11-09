@@ -38,7 +38,7 @@ export function addEvent<K extends keyof HTMLElementEventMap, T extends HTMLElem
   eventType: K,
   selector: string,
   listener: EvtListener<T, K>,
-  condition: (target: Element, currentTarget: Element) => boolean
+  condition?: (target: Element, currentTarget: Element) => boolean
 ) {
   const children = [...$element.querySelectorAll(selector)];
 

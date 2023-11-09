@@ -1,3 +1,4 @@
+import { HeaderColumnInfo } from '@t/instance/column';
 import { DataType } from './../options.d';
 import {
   DataType,
@@ -14,11 +15,12 @@ import { Observable } from '@t/observable';
 export interface Column {
   commonOptions: Observable<OptCommonColumn>;
   columnInfos: ColumnInfo[];
-  columnHeaderInfos: ColumnHeaderInfos[];
+  columnHeaderInfos: ColumnHeaderInfo[];
   groupColumnInfos: GroupColumnInfo[];
   headerRowCount: number;
   readonly columnDataFields: string[];
   readonly columnInfoMap: DataObject<ColumnInfo>;
+  readonly indexColumnHeaderInfoMap: DataObject<HeaderColumnInfo>;
   readonly visibleColumnInfos: ColumnInfo[];
   readonly visibleGroupColumnInfo: GroupColumnInfo[];
 }
@@ -46,11 +48,11 @@ export interface ColumnInfoData {
   colindex: number;
 }
 
-export interface ColumnHeaderInfos extends ColumnHeaderInfoData {
+export interface ColumnHeaderInfo extends ColumnHeaderInfoData {
   allowResizing?: boolean;
   caption: string;
   className?: string;
-  columns?: ColumnHeaderInfos[];
+  columns?: ColumnHeaderInfo[];
   headerCellTemplate?: Function;
   minWidth?: number;
   visible: boolean;
@@ -60,6 +62,7 @@ export interface ColumnHeaderInfos extends ColumnHeaderInfoData {
 export interface ColumnHeaderInfoData {
   colindex: number;
   colSpan: number;
+  rowindex: number;
   rowSpan: number;
 }
 
