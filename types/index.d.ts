@@ -12,7 +12,7 @@ declare namespace hui {
 
     private _element: HTMLElement;
     private _options: Observable<OptGrid>;
-    protected _instance: Instance;
+    private _instance: Instance;
 
     private render(): () => void;
     public element: () => HTMLElement;

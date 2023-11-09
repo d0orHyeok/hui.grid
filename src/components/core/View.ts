@@ -1,18 +1,18 @@
+import { entries } from '@/utils/common';
 import { off, on } from '@/utils/dom';
-import { CSSProperties, EvtListener } from '@t/html';
+import { AriaAttributes, AriaRole, CSSProperties, EvtListener } from '@t/html';
+import { DataObject } from '@t/index';
 
 /**
  * @template {HTMLElement} T
  */
 export default class View<T extends HTMLElement = HTMLElement> {
   #isRender: boolean;
-  private root: string;
-  private target: string;
+  #selector: string;
 
-  constructor(root: string = '', target: string = '') {
+  constructor(selector: string) {
     this.#isRender = false;
-    this.target = target;
-    this.root = root;
+    this.#selector = selector;
   }
 
   get isRender() {
@@ -23,7 +23,7 @@ export default class View<T extends HTMLElement = HTMLElement> {
    * target element to render
    */
   get $target() {
-    return document.querySelector(`${this.root} ${this.target}`) as T;
+    return document.querySelector(this.#selector) as T;
   }
 
   /**
@@ -83,6 +83,49 @@ export default class View<T extends HTMLElement = HTMLElement> {
 
   style(style: CSSProperties) {
     // @ts-ignore
-    Object.entries(style).forEach((key, value) => (this.$target.style[key] = value));
+    entries(style, (key, value) => (this.$target.style[key] = value));
+  }
+
+  aria(attributes: AriaAttributes) {
+    // @ts-ignore
+    entries(attributes, (key, value) => (this.$target[key] = value));
+  }
+
+  dataset(dataset: DataObject<string>) {
+    entries(dataset, (key, value) => (this.$target.dataset[key] = value));
+  }
+
+  attr(attr: DataObject<string>, cmd: 'set' | 'remove' = 'set') {
+    const command: 'setAttribute' | 'removeAttribute' = `${cmd}Attribute`;
+    entries(attr, (key, value) => this.$target[command](key, value));
+  }
+
+  role(role: AriaRole) {
+    this.$target.role = role;
+  }
+
+  /**
+   * Hide element
+   */
+  hide(classList?: string[]) {
+    const $el = this.$target;
+    if (Array.isArray(classList)) {
+      classList.forEach((className) =>
+        document.querySelectorAll(className).forEach((el) => el.classList.add('hui-hidden'))
+      );
+    } else $el.classList.add('hui-hidden');
+  }
+
+  /**
+   * Show element
+   */
+  show(classList?: string[]) {
+    const $el = this.$target;
+    if (!$el) return;
+    if (Array.isArray(classList)) {
+      classList.forEach((className) =>
+        document.querySelectorAll(className).forEach((el) => el.classList.remove('hui-hidden'))
+      );
+    } else $el.classList.remove('hui-hidden');
   }
 }

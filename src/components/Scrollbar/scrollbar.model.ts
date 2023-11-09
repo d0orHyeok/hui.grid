@@ -1,9 +1,0 @@
-import { Model } from '@/components/core';
-
-export type ScrollbarPosition = 'vertical' | 'horizontal';
-
-export interface ScrollbarState {
-  position: ScrollbarPosition;
-}
-
-export default class ScrollbarModel extends Model<ScrollbarState> {}

@@ -1,5 +1,5 @@
-import ScrollbarController from './scrollbar.controller';
-import ScrollbarModel from './scrollbar.model';
-import ScrollbarView from './scrollbar.view';
+import ScrollbarElement, { ScrollbarPosition, ScrollbarState } from './ScrollbarElement';
+import ScrollbarView from './ScrollbarView';
 
-export { ScrollbarController, ScrollbarModel, ScrollbarView };
+export { ScrollbarElement, ScrollbarView };
+export type { ScrollbarState, ScrollbarPosition };

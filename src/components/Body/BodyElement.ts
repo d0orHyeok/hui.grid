@@ -1,12 +1,17 @@
-import { Controller } from '@/components/core';
-import BodyModel from './body.model';
 import { cn } from '@/healpers/className';
 import { isString } from '@/utils/common';
 import { isEqual } from 'lodash-es';
 import { DataObject } from '@t/index';
-import BodyView from './body.view';
+import BodyView from './BodyView';
+import { Component } from '@/components/core';
+import { DefaultState } from '@t/components';
+import { Observable } from '@t/observable';
 
-export default class BodyController extends Controller<BodyModel, BodyView> {
+export interface BodyState extends DefaultState {
+  nodata: Observable<string | Element | undefined>;
+}
+
+export default class BodyElement extends Component<BodyView, BodyState> {
   init(): void {
     this._syncNodata();
     this._syncData();
@@ -16,9 +21,9 @@ export default class BodyController extends Controller<BodyModel, BodyView> {
    * Sync option nodata & body nodata
    */
   private _syncNodata() {
-    const { nodata } = this.model.state;
+    const { nodata } = this.state;
     nodata.subscribe((state) => {
-      const $nodata = this.$target.querySelector(cn('nodata', true));
+      const $nodata = this.$target.querySelector(cn('nodata'));
       if (!state || !$nodata) return;
       if (isString(state)) $nodata.innerHTML = state;
       else ($nodata.innerHTML = ''), $nodata.appendChild(state);
@@ -26,7 +31,7 @@ export default class BodyController extends Controller<BodyModel, BodyView> {
   }
 
   private _syncData() {
-    const { source } = this.model.state;
+    const { source } = this.state.instance;
     source.store.subscribe((cur, prev) => {
       if (isEqual(cur, prev)) return;
       this.handleChangeDatas(cur);

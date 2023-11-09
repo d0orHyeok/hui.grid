@@ -1,28 +1,27 @@
 import IHuiGrid, { DataObject, OptionOpt } from '@t/index';
 import { OptGrid } from '@t/options';
-import { generateId, isString, isUndefined } from '@/utils/common';
+import { isString, isUndefined } from '@/utils/common';
 import { createNode } from './utils/dom';
 import observable from './observable';
 import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
 import createInstance from '@/isntance';
 import { cn } from '@/healpers/className';
-import { HeaderController, HeaderModel, HeaderView } from '@/components/Header';
-import { BodyController, BodyModel, BodyView } from '@/components/Body';
-import { ScrollbarController, ScrollbarModel, ScrollbarView } from './components/Scrollbar';
+import { HeaderElement, HeaderView } from '@/components/Header';
+import { BodyElement, BodyView } from '@/components/Body';
+import { ScrollbarElement, ScrollbarView } from './components/Scrollbar';
 
 interface ComponentMap {
-  Header: HeaderController;
-  Body: BodyController;
-  HorizontalScrollbar: ScrollbarController;
-  VerticalScrollbar: ScrollbarController;
+  Header: HeaderElement;
+  Body: BodyElement;
+  HorizontalScrollbar: ScrollbarElement;
+  VerticalScrollbar: ScrollbarElement;
 }
 
 class HuiGrid implements IHuiGrid {
-  private _root: string;
   private _element: HTMLElement;
   private _options: Observable<OptGrid>;
-  protected _instance: Instance;
+  private _instance: Instance;
   private compoentMap: ComponentMap;
 
   /**
@@ -40,10 +39,9 @@ class HuiGrid implements IHuiGrid {
     this._options = opts;
 
     // Create grid base element
-    this._root = `hui-${generateId()}`;
     const $element = createNode('div', {
       role: 'grid',
-      classList: ['hui-grid', 'hui-grid-container', this._root],
+      classList: ['hui-grid', 'hui-grid-container'],
       ariaAttr: { label: 'Hui Data Grid' },
     });
     $element.innerHTML = /*html*/ `
@@ -54,23 +52,23 @@ class HuiGrid implements IHuiGrid {
     this._element = $element;
 
     // Create Instance
-    const root = `.${this._root}`;
     const instance = createInstance(opts);
+    const { root } = instance;
+    $element.classList.add(root);
     this._instance = instance;
 
     // Render Grid
-    const { source } = instance;
-    const Header = new HeaderController(new HeaderModel(), new HeaderView(root, cn('header', true)));
+    const Header = new HeaderElement(new HeaderView(cn(`.${root} .`, 'header')), { instance });
     const nodata = observable(() => opts().nodata);
-    const Body = new BodyController(new BodyModel({ nodata, source }), new BodyView(root, cn('body', true)));
-    const HorizontalScrollbar = new ScrollbarController(
-      new ScrollbarModel({ position: 'horizontal' }),
-      new ScrollbarView(root, cn('body', true) + ' .hui-hscroll')
-    );
-    const VerticalScrollbar = new ScrollbarController(
-      new ScrollbarModel({ position: 'vertical' }),
-      new ScrollbarView(root, cn('body', true) + ' .hui-vscroll')
-    );
+    const Body = new BodyElement(new BodyView(cn(`.${root} .`, 'body')), { nodata, instance });
+    const HorizontalScrollbar = new ScrollbarElement(new ScrollbarView(cn(`.${root} .`, 'body', '.hui-hscroll')), {
+      position: 'horizontal',
+      instance,
+    });
+    const VerticalScrollbar = new ScrollbarElement(new ScrollbarView(cn(`.${root} .`, 'body', '.hui-vscroll')), {
+      position: 'vertical',
+      instance,
+    });
 
     this.compoentMap = {
       Header,

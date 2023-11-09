@@ -13,6 +13,20 @@ const classMap = {
   groupRow: 'hui-grid-group-row',
 };
 
-const cn = (target: keyof typeof classMap, selector?: boolean) => (selector ? '.' : '') + classMap[target];
+export type ClassMapKey = keyof typeof classMap;
 
-export { cn };
+type CNParam = [ClassMapKey] | [string, ClassMapKey] | [string, ClassMapKey, string];
+
+const cn = (...args: CNParam) => {
+  switch (args.length) {
+    case 1:
+      return classMap[args[0]];
+    case 2:
+    case 3:
+      const [prefix, target, sufix = ''] = args;
+      return prefix + classMap[target] + sufix;
+  }
+};
+const cns = (...targets: ClassMapKey[]) => targets.map((item) => classMap[item]);
+
+export { cn, cns };

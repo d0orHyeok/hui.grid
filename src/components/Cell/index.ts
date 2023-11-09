@@ -1,5 +1,5 @@
-import CellController from './CellController';
-import CellModel from './CellModel';
+import CellElement, { CellState, CellType } from './CellElement';
 import CellView from './CellView';
 
-export { CellController, CellModel, CellView };
+export { CellElement, CellView };
+export type { CellState, CellType };

@@ -1,6 +1,6 @@
 import { View } from '@/components/core';
 import { cn } from '@/healpers/className';
-import { RowType } from './RowModel';
+import { RowType } from './RowElement';
 
 export default class RowView extends View {
   template(): string {

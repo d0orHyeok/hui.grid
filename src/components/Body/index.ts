@@ -1,5 +1,5 @@
-import BodyController from './body.controller';
-import BodyModel from './body.model';
-import BodyView from './body.view';
+import BodyElement, { BodyState } from './BodyElement';
+import BodyView from './BodyView';
 
-export { BodyController, BodyModel, BodyView };
+export { BodyElement, BodyView };
+export type { BodyState };

@@ -1,5 +1,4 @@
-import Controller from './Controller';
-import Model from './Model';
+import Component from './Component';
 import View from './View';
 
-export { Controller, Model, View };
+export { Component, View };

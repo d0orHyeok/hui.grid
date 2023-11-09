@@ -1,5 +1,5 @@
-import RowController from './RowController';
-import RowModel from './RowModel';
+import RowElement, { RowType, RowState } from './RowElement';
 import RowView from './RowView';
 
-export { RowController, RowModel, RowView };
+export { RowElement, RowView };
+export type { RowState, RowType };

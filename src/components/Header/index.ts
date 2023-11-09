@@ -1,5 +1,5 @@
-import HeaderController from './header.controller';
-import HeaderModel from './header.model';
-import HeaderView from './header.view';
+import HeaderElement, { HeaderState } from './HeaderElement';
+import HeaderView from './HeaderView';
 
-export { HeaderController, HeaderModel, HeaderView };
+export { HeaderElement, HeaderView };
+export type { HeaderState };
