@@ -1,7 +1,7 @@
 import { DefaultState } from '@t/components/index.d';
 import { View } from '@/components/core';
 
-export default class Component<V extends View = View, State extends DefaultState = DefaultState> {
+export default class Component<V extends View, State extends DefaultState> {
   state: State;
   view: V;
   constructor(view: V, state: State) {
@@ -9,10 +9,6 @@ export default class Component<V extends View = View, State extends DefaultState
     this.state = state;
     this.view.render();
     this.init();
-  }
-
-  get $target() {
-    return this.view.$target;
   }
 
   init() {}

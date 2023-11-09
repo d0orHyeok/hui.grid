@@ -15,6 +15,10 @@ export default class View<T extends HTMLElement = HTMLElement> {
     this.#selector = selector;
   }
 
+  get selector() {
+    return this.#selector;
+  }
+
   get isRender() {
     return this.#isRender;
   }
@@ -22,8 +26,8 @@ export default class View<T extends HTMLElement = HTMLElement> {
   /**
    * target element to render
    */
-  get $target() {
-    return document.querySelector(this.#selector) as T;
+  get $target(): T {
+    return document.querySelector(this.selector) as T;
   }
 
   /**

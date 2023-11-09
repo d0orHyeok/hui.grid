@@ -23,7 +23,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   private _syncNodata() {
     const { nodata } = this.state;
     nodata.subscribe((state) => {
-      const $nodata = this.$target.querySelector(cn('nodata'));
+      const $nodata = this.view.$target.querySelector(cn('nodata'));
       if (!state || !$nodata) return;
       if (isString(state)) $nodata.innerHTML = state;
       else ($nodata.innerHTML = ''), $nodata.appendChild(state);
