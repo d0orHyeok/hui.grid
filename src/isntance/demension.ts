@@ -9,8 +9,8 @@ interface DemensionParams {
 }
 
 const HEIGHT = 300;
-const ROW_HEIGHT = 30;
-const MIN_ROW_HEIGHT = 20;
+const ROW_HEIGHT = 32;
+const MIN_ROW_HEIGHT = 24;
 
 export function create({ column, opts }: DemensionParams) {
   const demension: Demension = {

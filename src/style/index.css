@@ -1,4 +1,5 @@
 @import './reset.css';
+@import '../assets/icon/style.css';
 
 :root {
   --hui-grid-head-background: #f0f0f0;
@@ -34,10 +35,16 @@
   min-height: inherit;
 }
 
-.hui-grid :is(table, tr, td, .hui-grid-border) {
+.hui-grid .hui-grid-table tr,
+.hui-grid .hui-grid-table td {
   border-style: var(--hui-grid-border-style);
   border-color: var(--hui-grid-border-color);
   border-width: var(--hui-grid-border-width);
+}
+
+.hui-grid .hui-grid-table td:focus {
+  outline-offset: -1px;
+  outline: #95c6ef solid 1px;
 }
 
 .hui-table-fixed {
@@ -48,6 +55,10 @@
   border-collapse: collapse;
   border-spacing: 0;
   margin: 0;
+}
+
+.hui-grid-header {
+  user-select: none;
 }
 
 .hui-grid-body {
@@ -119,4 +130,38 @@
   top: 0;
   right: 0;
   height: 100%;
+}
+
+/* Cell & Column */
+.hui-grid-table td {
+  padding: 3px 6px;
+  font-size: 12px;
+  overflow: hidden;
+}
+
+/* Column */
+.hui-grid-table td[role='columnheader'] {
+  text-align: center;
+  vertical-align: middle;
+  font-weight: bold;
+  text-transform: capitalize;
+}
+
+.hui-grid-table td[role='columnheader'] .hui-grid-column-text {
+  display: inline-block;
+  text-overflow: ellipsis;
+}
+
+.hui-grid-table td[role='columnheader'] .hui-grid-column-indicators {
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.hui-grid-table td[role='columnheader'] .hui-grid-column-indicators::after {
+  content: '';
+  clear: both;
 }
