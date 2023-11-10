@@ -130,6 +130,10 @@ export function compareFunction(fn1: Function, fn2: Function) {
   return fn1.toString() === fn2.toString();
 }
 
+export function isObjKey<T extends Object>(key: any, obj: T): key is keyof T {
+  return key in obj;
+}
+
 export function generateId() {
   return `${Date.now().toString(36)}-${Math.random().toString(36).substring(2)}`;
 }

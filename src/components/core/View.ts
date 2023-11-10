@@ -111,24 +111,23 @@ export default class View<T extends HTMLElement = HTMLElement> {
   /**
    * Hide element
    */
-  hide(classList?: string[]) {
+  hide(...classList: string[]) {
     const $el = this.$target;
-    if (Array.isArray(classList)) {
-      classList.forEach((className) =>
-        document.querySelectorAll(className).forEach((el) => el.classList.add('hui-hidden'))
-      );
+    if (!$el) return;
+    if (classList.length) {
+      classList.forEach((className) => $el.querySelectorAll(className).forEach((el) => el.classList.add('hui-hidden')));
     } else $el.classList.add('hui-hidden');
   }
 
   /**
    * Show element
    */
-  show(classList?: string[]) {
+  show(...classList: string[]) {
     const $el = this.$target;
     if (!$el) return;
-    if (Array.isArray(classList)) {
+    if (classList.length) {
       classList.forEach((className) =>
-        document.querySelectorAll(className).forEach((el) => el.classList.remove('hui-hidden'))
+        $el.querySelectorAll(className).forEach((el) => el.classList.remove('hui-hidden'))
       );
     } else $el.classList.remove('hui-hidden');
   }

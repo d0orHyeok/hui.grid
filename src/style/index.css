@@ -2,10 +2,10 @@
 @import '../assets/icon/style.css';
 
 :root {
-  --hui-grid-head-background: #f0f0f0;
+  --hui-grid-header-background: #f0f0f0;
   --hui-grid-border-width: 1px;
   --hui-grid-border-style: solid;
-  --hui-grid-border-color: #e8eaeb;
+  --hui-grid-border-color: #d3d3d3;
   --hui-grid-progressbar-background: #2dc214;
   --hui-grid-color: #333;
 }
@@ -33,22 +33,15 @@
   height: 100%;
   min-width: inherit;
   min-height: inherit;
+  flex-direction: column;
 }
 
+.hui-grid .hui-grid-borders,
 .hui-grid .hui-grid-table tr,
 .hui-grid .hui-grid-table td {
   border-style: var(--hui-grid-border-style);
   border-color: var(--hui-grid-border-color);
   border-width: var(--hui-grid-border-width);
-}
-
-.hui-grid .hui-grid-table td:focus {
-  outline-offset: -1px;
-  outline: #95c6ef solid 1px;
-}
-
-.hui-table-fixed {
-  table-layout: fixed;
 }
 
 .hui-grid-table {
@@ -57,8 +50,18 @@
   margin: 0;
 }
 
+.hui-grid-table-fixed {
+  table-layout: fixed;
+  width: 100%;
+}
+
 .hui-grid-header {
   user-select: none;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.078);
+}
+
+.hui-grid-header .hui-grid-table {
+  background-color: var(--hui-grid-header-background);
 }
 
 .hui-grid-body {
@@ -101,6 +104,7 @@
 }
 
 .hui-grid-table-content {
+  margin-top: -1px;
   min-height: 100%;
   overflow-anchor: none;
   position: relative;
@@ -139,6 +143,11 @@
   overflow: hidden;
 }
 
+.hui-grid .hui-grid-table td:focus {
+  outline-offset: -1px;
+  outline: #95c6ef solid 1px;
+}
+
 /* Column */
 .hui-grid-table td[role='columnheader'] {
   text-align: center;
@@ -165,3 +174,5 @@
   content: '';
   clear: both;
 }
+
+/* Cell */

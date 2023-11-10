@@ -1,4 +1,4 @@
-import { cn } from '@/healpers/className';
+import { cn, cns } from '@/healpers/className';
 import { View } from '@/components/core';
 
 export default class BodyView extends View {
@@ -8,14 +8,14 @@ export default class BodyView extends View {
         <div class="${cn('scrollContainer')}">
           <div class="${cn('scrollContent')}">
             <div class="hui-grid-table-content">
-              <table role="presentation" class="${cn('table')} hui-table-fixed" >
+              <table role="presentation" class="${cns('table', 'tableFixed').join(' ')}" >
                 <tbody role="presentation">
                 </tbody>
               </table>
             </div>
           </div >
-          <div class="${cn('scrollbar')} hui-vscroll"></div>
-          <div class="${cn('scrollbar')} hui-hscroll"></div>
+          <div class="${cns('scrollbar', 'hscrollbar').join(' ')}"></div>
+          <div class="${cns('scrollbar', 'vscrollbar').join(' ')}"></div>
         </div>
       </div>
       <span role="presentation" class="${cn('nodata')}">No Data</span>

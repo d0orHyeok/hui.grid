@@ -6,11 +6,18 @@ export type SourceParams = Observable<{
   datas: DataObject[] | undefined;
 }>;
 
+export interface SourceData {
+  type: 'data' | 'group';
+  key: string;
+  data: DataObject;
+  items?: DataObject[];
+}
+
 export interface Source {
   _key: string;
   key: string;
   readonly _changes: Observable<SourceChanges>;
-  readonly store: Observable<DataObject[]>;
+  readonly store: Observable<SourceData[]>;
   items: () => DataObject[];
   changes: () => SourceChangeItem[];
   setData: (datas: DataObject[]) => void;

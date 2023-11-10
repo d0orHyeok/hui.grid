@@ -1,8 +1,8 @@
 import { HeaderColumnInfo } from '@t/instance/column';
-import { DataType } from './../options.d';
+import { CellTemplate, DataType } from './../options.d';
 import {
   DataType,
-  DisplayText,
+  CalculateDisplayValue,
   GroupValueFunction,
   HorizontalAlign,
   OptCommonColumn,
@@ -32,14 +32,14 @@ export interface ColumnInfo extends ColumnInfoData {
   allowGrouping?: boolean;
   booleanText?: { trueText?: string; falseText?: string };
   calculateCellValue?: (rowData: DataObject) => any;
-  cellTemplate?: Function;
+  calculateDisplayValue?: CalculateDisplayValue;
+  cellTemplate?: CellTemplate;
   className?: string;
   dataField: string;
   dataType?: DataType;
-  displayText?: DisplayText;
   minWidth?: number;
   setCellValue?: SetCellValue;
-  vertialAlign?: VerticalAlign;
+  verticalAlign?: VerticalAlign;
   visible: boolean;
   width?: number | string;
 }

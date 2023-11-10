@@ -1,4 +1,5 @@
 import { DataObject } from '@t/index';
+import { ColumnInfo } from './instance/column';
 
 export interface OptGrid extends Partial<OptCommonColumn> {
   /** Specifies the shortcut key that sets focus on the grid component. */
@@ -79,6 +80,8 @@ export interface OptColumn {
   booleanText?: { trueText?: string; falseText?: string };
   /** Calculates custom cell values */
   calculateCellValue?: (rowData: DataObject) => any;
+  /** Customizes the text displayed in column cells. */
+  calculateDisplayValue?: CalculateDisplayValue;
   /** Specifies a caption for the column. */
   caption?: string;
   /** Specifies a custom template for data cells. */
@@ -91,8 +94,6 @@ export interface OptColumn {
   dataField?: string;
   /** Casts column values to a specific data type. */
   dataType?: DataType;
-  /** Customizes the text displayed in column cells. */
-  displayText?: DisplayText;
   /** Specifies a custom template for group cells */
   groupCellTemplate?: Function; // Experimental
   /** Sets custom column values used to group grid records. */
@@ -109,7 +110,7 @@ export interface OptColumn {
   /** Specifies a function to be invoked after the user has edited a cell value, but before it is saved in the data source. */
   setCellValue?: SetCellValue;
   /** Vertical aligns the content of the column */
-  vertialAlign?: VerticalAlign;
+  verticalAlign?: VerticalAlign;
   /** Specifies whether the column is visible, that is, occupies space in the table. */
   visible?: boolean;
   /**
@@ -121,6 +122,15 @@ export interface OptColumn {
 }
 
 export type DataType = 'string' | 'number' | 'boolean' | 'date' | 'progress';
-export type DisplayText = (cellInfo: { value: any; valueText: string }) => string;
+export type CalculateDisplayValue = (rowData: DataObject) => any;
 export type GroupValueFunction = (rowData: DataObject) => any;
 export type SetCellValue = (newData: DataObject, value: any, rowData: DataObject) => void;
+export interface CellTempateParam {
+  columnInfo: ColumnInfo;
+  columnIndex: number;
+  data: DataObject;
+  displayValue: any;
+  value: any;
+  rowIndex: number;
+}
+export type CellTemplate = (param: CellTempateParam) => string | number | boolean | Date | Node | Element;
