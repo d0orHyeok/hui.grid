@@ -1,6 +1,5 @@
 import { isString } from '@/utils/common';
 import { isEqual } from 'lodash-es';
-import { DataObject } from '@t/index';
 import BodyView from './BodyView';
 import { Component } from '@/components/core';
 import { DefaultState } from '@t/components';
@@ -8,6 +7,7 @@ import { Observable } from '@t/observable';
 import { cn } from '@/healpers/className';
 import { aria$ } from '@/utils/dom';
 import { RowElement, RowView } from '../Row';
+import { SourceData } from '@t/instance/source';
 
 export interface BodyState extends DefaultState {
   nodata: Observable<string | Element | undefined>;
@@ -19,6 +19,8 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   init(): void {
     this._syncNodata();
     this._syncData();
+    this._syncViewportHeight();
+    this._bindVerticalScrollEvent();
   }
 
   /**
@@ -42,7 +44,24 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     }, true);
   }
 
-  handleChangeDatas(datas: DataObject[]) {
+  private _syncViewportHeight() {
+    const { viewport } = this.state.instance.rowCoords;
+    const resizeObserver = new ResizeObserver((entries) => {
+      entries.forEach((entry) => viewport({ ...viewport(), viewportHeight: entry.contentRect.height }));
+    });
+    resizeObserver.observe(this.view.$target);
+  }
+
+  private _bindVerticalScrollEvent() {
+    const { rowCoords } = this.state.instance;
+    this.view.on('wheel', (event) => {
+      const { shiftKey, deltaY } = event;
+      if (shiftKey) return;
+      rowCoords.moveScroll(deltaY);
+    });
+  }
+
+  handleChangeDatas(datas: SourceData[]) {
     const dataSize = datas.length;
     this.view[dataSize ? 'hide' : 'show'](cn('.', 'nodata'));
 

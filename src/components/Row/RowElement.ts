@@ -5,7 +5,7 @@ import { ColumnHeaderInfo, GroupColumnInfo } from '@t/instance/column';
 import { aria$ } from '@/utils/dom';
 import { ColumnElement, ColumnView } from '@/components/Column';
 import { CellElement, CellView } from '../Cell';
-import { DataObject } from '@t/index';
+import { SourceData } from '@t/instance/source';
 
 export type RowType = RowTypedState['type'];
 
@@ -22,7 +22,7 @@ export type RowTypedState =
     }
   | {
       type: 'data';
-      data: DataObject;
+      data: SourceData;
     };
 
 export default class RowElement extends Component<RowView, RowState> {
@@ -32,7 +32,7 @@ export default class RowElement extends Component<RowView, RowState> {
   init(): void {
     this.view.setRowType(this.state.type);
     // Set rowHeight
-    this.view.style({ height: this.state.instance.demension.rowHeight + 'px' });
+    this.view.style({ height: this.state.instance.demension().rowHeight + 'px' });
     // Render columns
     this.renderColumnHeaders();
     this.renderDataCells();

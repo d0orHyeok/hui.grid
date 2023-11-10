@@ -36,7 +36,6 @@
   flex-direction: column;
 }
 
-.hui-grid .hui-grid-borders,
 .hui-grid .hui-grid-table tr,
 .hui-grid .hui-grid-table td {
   border-style: var(--hui-grid-border-style);
@@ -66,14 +65,24 @@
 
 .hui-grid-body {
   display: flex;
+  border-bottom: var(--hui-grid-border-width) var(--hui-grid-border-style) var(--hui-grid-border-color);
+}
+
+.hui-grid-body .hui-grid-table tr:first-child,
+.hui-grid-body .hui-grid-table td {
+  border-top: 0;
+}
+
+.hui-grid-body,
+.hui-grid-scroll-wrapper {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
 }
 
 .hui-grid-scroll-wrapper {
   position: relative;
-  flex: 1;
   height: auto;
-  min-width: 0;
-  min-height: 0;
 }
 
 .hui-grid-scroll-container {
@@ -104,7 +113,6 @@
 }
 
 .hui-grid-table-content {
-  margin-top: -1px;
   min-height: 100%;
   overflow-anchor: none;
   position: relative;
@@ -176,3 +184,6 @@
 }
 
 /* Cell */
+.hui-grid-body .hui-grid-table td {
+  text-overflow: ellipsis;
+}

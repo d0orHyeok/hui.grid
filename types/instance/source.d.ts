@@ -18,7 +18,7 @@ export interface Source {
   key: string;
   readonly _changes: Observable<SourceChanges>;
   readonly store: Observable<SourceData[]>;
-  items: () => DataObject[];
+  items: () => SourceData[];
   changes: () => SourceChangeItem[];
   setData: (datas: DataObject[]) => void;
   insert: (...datas: DataObject[]) => void;
