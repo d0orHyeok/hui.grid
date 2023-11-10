@@ -9,7 +9,5 @@ export interface ScrollbarState extends DefaultState {
 }
 
 export default class ScrollbarElement extends Component<ScrollbarView, ScrollbarState> {
-  init(): void {
-    this.view.setPosition(this.state.position);
-  }
+  init(): void {}
 }

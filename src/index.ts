@@ -61,14 +61,14 @@ class HuiGrid implements IHuiGrid {
     const Header = new HeaderElement(new HeaderView(cn(`.${root} .`, 'header')), { instance });
     const nodata = observable(() => opts().nodata);
     const Body = new BodyElement(new BodyView(cn(`.${root} .`, 'body')), { nodata, instance });
-    const HorizontalScrollbar = new ScrollbarElement(new ScrollbarView(cn(`.${root} .`, 'body') + cn('hscrollbar')), {
-      position: 'horizontal',
-      instance,
-    });
-    const VerticalScrollbar = new ScrollbarElement(new ScrollbarView(cn(`.${root} .`, 'body') + cn('vscrollbar')), {
-      position: 'vertical',
-      instance,
-    });
+    const HorizontalScrollbar = new ScrollbarElement(
+      new ScrollbarView(cn(`.${root} .`, 'body', ` .${cn('hscrollbar')}`)),
+      { position: 'horizontal', instance }
+    );
+    const VerticalScrollbar = new ScrollbarElement(
+      new ScrollbarView(cn(`.${root} .`, 'body', ` .${cn('vscrollbar')}`)),
+      { position: 'vertical', instance }
+    );
 
     this.compoentMap = {
       Header,
