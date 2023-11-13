@@ -28,13 +28,13 @@ export interface RowCoords {
     viewportHeight: number;
     scrollTop: number;
   }>;
-  coords: Observable<{
-    offset: number[];
-    previusOffset: number[] | null;
+  scroll: Observable<{
     translateY: number;
     scrollThumbHeight: number;
-    totalItemCount: number;
     scrollHeight: number;
+    maxScrollTop: number;
   }>;
+  offsets: Observable<number[]>;
   moveScroll: (delta: number) => void;
+  moveTranslate: (delta: number) => void;
 }

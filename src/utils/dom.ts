@@ -132,3 +132,13 @@ export function toggleShown(element: Element, isShow: boolean, role?: string) {
     element.role = 'presentation';
   }
 }
+
+export function animationThrottle<T extends Function>(callback: T) {
+  let afId: null | number = null;
+  return function (...args: any) {
+    if (afId) window.cancelAnimationFrame(afId);
+    afId = window.requestAnimationFrame(function () {
+      callback(...args);
+    });
+  };
+}
