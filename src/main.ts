@@ -7,7 +7,7 @@ if ($app) $app.style.height = '386px';
 const names = ['Alice', 'John', 'Simth', 'Jane', 'Brus', 'Saya', 'Minjun'];
 const nameSize = names.length;
 
-const datas = Array.from({ length: 20 }, (_, i) => {
+const datas = Array.from({ length: 30 }, (_, i) => {
   return {
     key: `rowkey${i}`,
     name: names[Math.floor(Math.random() * 100) % nameSize],

@@ -25,7 +25,6 @@
     }
   },
   "scripts": {
-    "dev": "vite",
     "clean": "node scripts/clean.js",
     "build": "(npm run clean) && (npm run build:rollup) && (node scripts/erase.js)",
     "build:rollup": "rollup --config",

@@ -55,10 +55,15 @@ export default class View<T extends HTMLElement = HTMLElement> {
    * @template {keyof HTMLElementEventMap} K
    * @param {K} eventType
    * @param {EvtListener<T, K>} listener
+   * @param {AddEventListenerOptions} [options]
    */
-  on<K extends keyof HTMLElementEventMap>(eventType: K, listener: EvtListener<T, K>) {
+  on<K extends keyof HTMLElementEventMap>(
+    eventType: K,
+    listener: EvtListener<T, K>,
+    options?: AddEventListenerOptions
+  ) {
     const $el = this.$target;
-    if ($el) on($el as T, eventType, listener);
+    if ($el) on($el as T, eventType, listener, options);
   }
 
   /**

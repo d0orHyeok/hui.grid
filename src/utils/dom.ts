@@ -14,10 +14,11 @@ function convertCamelToDashCase(key: string) {
 export function on<K extends keyof HTMLElementEventMap, T extends HTMLElement = HTMLElement>(
   $element: T,
   eventType: K,
-  listener: EvtListener<T, K>
+  listener: EvtListener<T, K>,
+  options?: AddEventListenerOptions
 ) {
   // @ts-ignore
-  return $element.addEventListener(eventType, listener);
+  return $element.addEventListener(eventType, listener, options);
 }
 
 export function off<K extends keyof HTMLElementEventMap, T extends HTMLElement = HTMLElement>(

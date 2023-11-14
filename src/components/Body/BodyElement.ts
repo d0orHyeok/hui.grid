@@ -18,8 +18,8 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
   init(): void {
     this._syncNodata();
-    this._syncData();
-    this._syncViewportHeight();
+    this._syncOffsetsAndData();
+    this._syncViewport();
     this._bindVerticalScrollEvent();
   }
 
@@ -36,37 +36,38 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     }, true);
   }
 
-  private _syncData() {
+  private _syncOffsetsAndData() {
     const { source } = this.state.instance;
     source.store.subscribe((cur, prev) => {
       if (isEqual(cur, prev)) return;
-      this.handleChangeDatas(cur);
+      this.renderDatas(cur);
     }, true);
   }
 
-  private _syncViewportHeight() {
+  private _syncViewport() {
     const { viewport } = this.state.instance.rowCoords;
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => viewport({ ...viewport(), viewportHeight: entry.contentRect.height }));
     });
     resizeObserver.observe(this.view.$target);
-  }
 
-  private _bindVerticalScrollEvent() {
-    const { rowCoords } = this.state.instance;
-    this.view.on('wheel', (event) => {
-      const { shiftKey, deltaY } = event;
-      if (shiftKey) return;
-      rowCoords.moveScroll(deltaY);
+    viewport.subscribe((state) => {
+      const $el = this.view.$target.querySelector('.hui-grid-scroll-container');
+      if ($el) $el.scrollTop = state.scrollTop;
     });
   }
 
-  handleChangeDatas(datas: SourceData[]) {
+  private _bindVerticalScrollEvent() {
+    // const { rowCoords } = this.state.instance;
+  }
+
+  renderDatas(datas: SourceData[]) {
     const dataSize = datas.length;
     this.view[dataSize ? 'hide' : 'show'](cn('.', 'nodata'));
 
     const $tbody = this.view.$target.querySelector(cn('.', 'table', ' tbody'));
     if (!$tbody) return;
+
     $tbody.innerHTML = datas.map((_, index) => `<tr role="row" ${aria$({ rowindex: index + 1 })}></tr>`).join('');
     this.Rows = datas.map((data, index) => {
       const rowindex = index + 1;
