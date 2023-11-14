@@ -39,6 +39,11 @@ export default class View<T extends HTMLElement = HTMLElement> {
   }
 
   /**
+   * Bind events
+   */
+  bindEvents() {}
+
+  /**
    * Render, replace DOM content to virtual DOM content
    */
   render() {
@@ -47,6 +52,7 @@ export default class View<T extends HTMLElement = HTMLElement> {
     const $new = $target.cloneNode(true) as T;
     $new.innerHTML = this.template();
     this.$target?.replaceWith($new);
+    this.bindEvents();
     this.#isRender = true;
   }
 

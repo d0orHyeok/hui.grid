@@ -1,40 +1,24 @@
 import { Observable } from '@t/observable';
-import { Demension } from './demension';
-import { Source } from './source';
+import { Demension } from '@t/instance/demension';
+import { Source } from '@t/instance/source';
+import { Viewport } from '@t/instance/viewport';
 
 export interface RowCoordsParam {
-  root: string;
   demension: Demension;
   source: Source;
+  viewport: Viewport;
 }
 
-export interface CalCulateVirtualScrollParam {
-  scrollTop: number;
-  viewportHeight: number;
-}
-
-export interface CalculateVirtualScrollValues {
-  offset: number[];
-  previusOffset: number[] | null;
+export interface VerticaScrolllCoords {
+  scrollbarHeight: number;
   translateY: number;
   scrollThumbHeight: number;
-  totalItemCount: number;
+  scrollHeight: number;
+  maxScrollTop: number;
 }
 
-export type CalculateVirtualScroll = (param: CalCulateVirtualScrollParam) => CalculateVirtualScrollValues;
-
 export interface RowCoords {
-  viewport: Observable<{
-    viewportHeight: number;
-    scrollTop: number;
-  }>;
-  scroll: Observable<{
-    translateY: number;
-    scrollThumbHeight: number;
-    scrollHeight: number;
-    maxScrollTop: number;
-  }>;
+  scrollTop: Observable<number>;
   offsets: Observable<number[]>;
-  moveScroll: (delta: number) => void;
-  moveTranslate: (delta: number) => void;
+  coords: Observable<VerticaScrolllCoords>;
 }

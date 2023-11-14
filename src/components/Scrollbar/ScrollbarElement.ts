@@ -1,7 +1,10 @@
 import { Component } from '@/components/core';
 import ScrollbarView from './ScrollbarView';
 import { DefaultState } from '@t/components';
+import { cn } from '@/healpers/className';
+import { customScroll, customScrollDrag } from '@/healpers/scroll';
 import { on } from '@/utils/dom';
+import { clamp } from '@/utils/common';
 
 export type ScrollbarPosition = 'vertical' | 'horizontal';
 
@@ -11,79 +14,73 @@ export interface ScrollbarState extends DefaultState {
 
 export default class ScrollbarElement extends Component<ScrollbarView, ScrollbarState> {
   init(): void {
-    this._syncRowCoords();
-    this._bindVerticalScrollDragEvent();
+    this._syncScrollbarPosition();
+    this._makeScrollable();
   }
 
-  private _syncRowCoords() {
-    if (this.state.position !== 'vertical') return;
+  private _syncScrollbarPosition() {
+    const { $thumb } = this.view;
+    if (this.state.position === 'vertical') {
+      const { rowCoords } = this.state.instance;
+      const { coords } = rowCoords;
+      coords.subscribe((state) => {
+        const { scrollThumbHeight, translateY, scrollbarHeight } = state;
+        const isDiabled = scrollThumbHeight >= scrollbarHeight;
+        this.view[isDiabled ? 'hide' : 'show']();
+        $thumb.style.height = scrollThumbHeight + 'px';
+        $thumb.style.transform = `translateY(${translateY}px)`;
+      });
+    }
   }
 
-  private _bindVerticalScrollDragEvent() {
-    if (this.state.position !== 'vertical') return;
+  private _makeScrollable() {
+    const { $thumb, $target } = this.view;
+    if (this.state.position === 'vertical') {
+      const { root, rowCoords } = this.state.instance;
+      const { coords, scrollTop } = rowCoords;
 
-    let lastKnownScrollPosition = 0;
-    const { $target } = this.view;
-    on($target, 'scroll', () => {
-      let ticking = false;
-      if (!ticking) {
-        // event throtteling
-        window.requestAnimationFrame(() => {
-          const scrollY = $target.scrollTop;
-          const deltaY = scrollY - lastKnownScrollPosition;
-          lastKnownScrollPosition = scrollY;
-          console.log('deltaY', deltaY);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    });
+      // Sync scrollTop
+      scrollTop.subscribe((state) => {
+        $container.scrollTop = state;
+      });
+
+      // Bind scrolling event
+      const $container = document.querySelector(`.${root} .${cn('body')} .hui-grid-scroll-container`) as HTMLElement;
+      const fns = { getStart: scrollTop, getMax: () => coords().maxScrollTop };
+      customScroll('y', $container, fns, scrollTop);
+
+      // Bind thumb drag event
+      const onTranslate = (deltaTranslateY: number) => {
+        const { scrollHeight, translateY, scrollbarHeight } = coords();
+        const newScrollTop = Math.max(((translateY + deltaTranslateY) * scrollHeight) / scrollbarHeight, 0);
+        scrollTop(newScrollTop);
+      };
+      customScrollDrag('y', { scrollbar: $target, scrollthumb: $thumb }, onTranslate);
+
+      // Tracking mouse offset
+      // Move scrollThumb to mouse offset
+      let isTracking = false;
+      let trackId = -1;
+      on($target, 'mouseleave', () => (isTracking = false));
+      on($target, 'mouseup', () => (isTracking = false));
+      on($target, 'mousedown', (event) => {
+        event.stopPropagation();
+        clearInterval(trackId);
+        if ($thumb.contains(event.target as Node)) return (isTracking = false);
+        isTracking = true;
+
+        const offset = event.offsetY;
+        const { scrollThumbHeight, maxScrollTop, translateY } = coords();
+        const minOffset = Math.max(offset - scrollThumbHeight, 0);
+        const multiplier = offset < (translateY + translateY + scrollThumbHeight) / 2 ? -1 : 1;
+        const delta = 100 * multiplier;
+        trackId = setInterval(() => {
+          if (!isTracking) clearInterval(trackId);
+          scrollTop(clamp(scrollTop() + delta, 0, maxScrollTop));
+          const changeY = coords().translateY;
+          if ((multiplier > 0 && changeY > minOffset) || (multiplier < 0 && changeY < offset)) isTracking = false;
+        }, 33);
+      });
+    }
   }
-
-  // private _syncRowCoords() {
-  //   if (this.state.position !== 'vertical') return;
-  //   const { $thumb } = this.view;
-  //   const { rowCoords } = this.state.instance;
-  //   const { scroll } = rowCoords;
-  //   scroll.subscribe((state) => {
-  //     const { scrollThumbHeight, translateY } = state;
-  //     $thumb.style.height = scrollThumbHeight + 'px';
-  //     $thumb.style.transform = `translateY(${translateY}px)`;
-  //   });
-  // }
-
-  // private _bindVerticalScrollDragEvent() {
-  //   if (this.state.position !== 'vertical') return;
-  //   const $html = document.querySelector('html') as HTMLElement;
-  //   const { $thumb, $target } = this.view;
-  //   const { rowCoords } = this.state.instance;
-
-  //   let startY: number | null = null;
-  //   let prevUserSelect = '';
-
-  //   on($target, 'mousedown', (event) => {
-  //     if ($thumb.contains(event.target as Node)) {
-  //       startY = event.pageY;
-  //       prevUserSelect = document.body.style.userSelect;
-  //       $thumb.style.transition = 'none';
-  //     }
-  //   });
-  //   on($html, 'mouseup', () => {
-  //     startY = null;
-  //     document.body.style.userSelect = prevUserSelect;
-  //     $thumb.style.transition = '';
-  //   });
-
-  //   function onMouseMove(event: MouseEvent) {
-  //     if (isNull(startY)) return;
-  //     event.preventDefault();
-  //     document.body.style.userSelect = 'none';
-  //     const pos = event.pageY;
-  //     const deltaY = pos - startY;
-  //     startY = pos;
-  //     rowCoords.moveTranslate(deltaY);
-  //   }
-
-  //   on($html, 'mousemove', animationThrottle(onMouseMove));
-  // }
 }

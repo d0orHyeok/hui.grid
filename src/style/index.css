@@ -132,33 +132,6 @@
 .hui-scrollbar {
   position: absolute;
   pointer-events: auto;
-}
-
-.hui-horizontal-scrollbar {
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  overflow-x: auto;
-}
-
-.hui-horizontal-scrollbar .hui-scrollthumb {
-  height: 1px;
-}
-
-.hui-vertical-scrollbar {
-  overflow-y: auto;
-  top: 0;
-  right: 0;
-  height: 100%;
-}
-
-.hui-vertical-scrollbar .hui-scrollthumb {
-  width: 1px;
-}
-
-/* .hui-scrollbar {
-  position: absolute;
-  pointer-events: auto;
   transition: background-color 0.5s linear 1s;
 }
 
@@ -183,7 +156,8 @@
     transform 0.1s ease-in-out;
 }
 
-.hui-horizontal-scrollbar:hover .hui-scrollthumb {
+.hui-horizontal-scrollbar:hover .hui-scrollthumb,
+.hui-horizontal-scrollbar .hui-scrollthumb-active {
   height: 15px;
 }
 
@@ -202,7 +176,8 @@
     transform 0.1s ease-in-out;
 }
 
-.hui-vertical-scrollbar:hover .hui-scrollthumb {
+.hui-vertical-scrollbar:hover .hui-scrollthumb,
+.hui-vertical-scrollbar .hui-scrollthumb-active {
   width: 15px;
 }
 
@@ -232,7 +207,7 @@
 
 .hui-scrollthumb:active .hui-scrollthumb-content::after {
   background-color: rgba(56, 149, 225, 0.8);
-} */
+}
 
 /* Cell & Column */
 .hui-grid-table td {

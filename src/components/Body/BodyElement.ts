@@ -45,20 +45,18 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   }
 
   private _syncViewport() {
-    const { viewport } = this.state.instance.rowCoords;
+    const { viewport } = this.state.instance;
     const resizeObserver = new ResizeObserver((entries) => {
-      entries.forEach((entry) => viewport({ ...viewport(), viewportHeight: entry.contentRect.height }));
+      entries.forEach((entry) => {
+        const { width, height } = entry.contentRect;
+        viewport({ width, height });
+      });
     });
     resizeObserver.observe(this.view.$target);
-
-    viewport.subscribe((state) => {
-      const $el = this.view.$target.querySelector('.hui-grid-scroll-container');
-      if ($el) $el.scrollTop = state.scrollTop;
-    });
   }
 
   private _bindVerticalScrollEvent() {
-    // const { rowCoords } = this.state.instance;
+    const { rowCoords } = this.state.instance;
   }
 
   renderDatas(datas: SourceData[]) {
