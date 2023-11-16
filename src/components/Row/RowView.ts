@@ -5,9 +5,7 @@ import { isString } from '@/utils/common';
 
 export default class RowView extends View<HTMLTableRowElement> {
   template(): string {
-    return /*html*/ `
-      <tr class="${cn('row')}"></tr>
-    `;
+    return /*html*/ ``;
   }
 
   get rowindex() {

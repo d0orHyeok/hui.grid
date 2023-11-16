@@ -72,6 +72,11 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     resizeObserver.observe(this.view.$target);
   }
 
+  /**
+   * Sync virtual top & bottom space height
+   * @param {number} dataSize
+   * @param {[number, number]} offset
+   */
   private _syncSpace(dataSize: number, offset: number[]) {
     const $tbody = this.view.$target.querySelector(cn('.', 'table', ' tbody'));
     if (!$tbody) return;
@@ -80,8 +85,8 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const [startIndex, endIndex] = offset;
 
     const rowHeight = this.state.instance.demension().rowHeight;
-    const virtualTopHeight = startIndex * rowHeight;
-    const virtualBottomHeight = (dataSize - endIndex) * rowHeight;
+    const virtualTopHeight = Math.max(startIndex * rowHeight, 0);
+    const virtualBottomHeight = Math.max((dataSize - endIndex) * rowHeight, 0);
 
     if (virtualTopHeight === 0) $thead.innerHTML = '';
     else $thead.innerHTML = `<tr role="row" style="height:${virtualTopHeight}px"><td></td></tr>`;
@@ -106,8 +111,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       if (startIndex < rowindex && index < endIndex) {
         if (!item?.element) {
           const $tr = createNode('tr', { role: 'row', ariaAttr: { rowindex }, style: { height: '32px' } });
-          $tr.innerHTML = `<td>row ${rowindex}</td>`;
-          renderMap.set(rowindex, { element: $tr });
+          $tr.innerHTML = `<td>Row ${rowindex}</td>`;
           const $after = $tbody.querySelector(`[aria-rowindex="${rowindex + 1}"`);
           if ($after) $tbody.insertBefore($tr, $after);
           else {
@@ -116,6 +120,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
             );
             $tbody.insertBefore($tr, nextItem ?? null);
           }
+          renderMap.set(rowindex, { element: $tr });
         }
       } else {
         if (item?.element) item.element.remove();

@@ -16,14 +16,13 @@ export function create({ demension, source, viewport }: RowCoordsParam): RowCoor
     const viewportHeight = viewport().height;
     const nodePadding = 5;
 
+    const pageNodeCount = Math.ceil(viewportHeight / rowHeight);
+    const visibleNodeCount = pageNodeCount + 2 * nodePadding;
+
     let startNode = Math.floor(scrollTop() / rowHeight) - nodePadding;
     startNode = Math.max(0, startNode);
-
-    const pageNodeCount = Math.ceil(viewportHeight / rowHeight);
-    let visibleNodeCount = pageNodeCount + 2 * nodePadding;
     if (visibleNodeCount >= totalItemCount) startNode = 0;
-    visibleNodeCount = Math.min(totalItemCount - startNode, visibleNodeCount);
-
+    else if (startNode >= totalItemCount - visibleNodeCount) startNode = totalItemCount - visibleNodeCount;
     offsets([startNode, startNode + visibleNodeCount]);
 
     const scrollHeight = totalRowHeight;
