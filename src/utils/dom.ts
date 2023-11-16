@@ -11,6 +11,16 @@ function convertCamelToDashCase(key: string) {
   }, '');
 }
 
+export function find$<T extends Element = HTMLElement>(selector: string, element?: Element) {
+  const $el = !element?.nodeType ? document : element;
+  return $el.querySelector<T>(selector);
+}
+
+export function findAll$<T extends Element = HTMLElement>(selector: string, element?: Element) {
+  const $el = !element?.nodeType ? document : element;
+  return $el.querySelectorAll<T>(selector);
+}
+
 export function on<K extends keyof HTMLElementEventMap, T extends HTMLElement = HTMLElement>(
   $element: T,
   eventType: K,
@@ -104,7 +114,7 @@ interface CreateNodeOptions {
   attr: { [key: string]: string | boolean | number };
 }
 
-export function createNode<K extends keyof HTMLElementTagNameMap>(tagName: K, options: Partial<CreateNodeOptions>) {
+export function create$<K extends keyof HTMLElementTagNameMap>(tagName: K, options: Partial<CreateNodeOptions>) {
   const $el = document.createElement(tagName);
   const { id, className, classList, role, style, dataset, ariaAttr, type, attr } = options;
   if (id) $el.id = id;
