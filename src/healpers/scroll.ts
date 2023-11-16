@@ -1,5 +1,5 @@
 import { clamp, isNull } from '@/utils/common';
-import { animationThrottle, on } from '@/utils/dom';
+import { animationThrottle, find$, on } from '@/utils/dom';
 
 interface MoveScrollElementParam {
   scrollbar: Element;
@@ -11,7 +11,7 @@ export function customScrollDrag(
   scrollElements: MoveScrollElementParam,
   onTranslate: (translateDelta: number) => any
 ) {
-  const $html = document.querySelector('html') as HTMLElement;
+  const $html = find$('html') as HTMLElement;
   const $target = scrollElements.scrollbar as HTMLElement;
   const $thumb = scrollElements.scrollthumb as HTMLElement;
 

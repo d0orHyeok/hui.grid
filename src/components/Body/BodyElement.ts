@@ -5,7 +5,7 @@ import { Component } from '@/components/core';
 import { DefaultState } from '@t/components';
 import { Observable } from '@t/observable';
 import { cn } from '@/healpers/className';
-import { aria$, createNode } from '@/utils/dom';
+import { aria$, create$, find$ } from '@/utils/dom';
 import { RowElement, RowView } from '../Row';
 import { SourceData } from '@t/instance/source';
 
@@ -33,7 +33,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   private _syncNodata() {
     const { nodata } = this.state;
     nodata.subscribe((state) => {
-      const $nodata = this.view.$target.querySelector(cn('.', 'nodata'));
+      const $nodata = find$(cn('.', 'nodata'), this.view.$target);
       if (!state || !$nodata) return;
       if (isString(state)) $nodata.innerHTML = state;
       else ($nodata.innerHTML = ''), $nodata.appendChild(state);
@@ -78,7 +78,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
    * @param {[number, number]} offset
    */
   private _syncSpace(dataSize: number, offset: number[]) {
-    const $tbody = this.view.$target.querySelector(cn('.', 'table', ' tbody'));
+    const $tbody = find$(cn('.', 'table', ' tbody'), this.view.$target);
     if (!$tbody) return;
     const $thead = $tbody.previousElementSibling as HTMLElement;
     const $tfoot = $tbody.nextElementSibling as HTMLElement;
@@ -98,7 +98,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const dataSize = datas.length;
     this.view[dataSize ? 'hide' : 'show'](cn('.', 'nodata'));
 
-    const $tbody = this.view.$target.querySelector(cn('.', 'table', ' tbody'));
+    const $tbody = find$(cn('.', 'table', ' tbody'), this.view.$target);
     if (!$tbody) return;
 
     if (!this.renderMap) this.renderMap = new Map();
@@ -110,9 +110,9 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       const item = renderMap.get(rowindex);
       if (startIndex < rowindex && index < endIndex) {
         if (!item?.element) {
-          const $tr = createNode('tr', { role: 'row', ariaAttr: { rowindex }, style: { height: '32px' } });
+          const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex }, style: { height: '32px' } });
           $tr.innerHTML = `<td>Row ${rowindex}</td>`;
-          const $after = $tbody.querySelector(`[aria-rowindex="${rowindex + 1}"`);
+          const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);
           if ($after) $tbody.insertBefore($tr, $after);
           else {
             const nextItem = (Array.from($tbody.childNodes) as HTMLElement[]).find(

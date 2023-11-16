@@ -3,7 +3,7 @@ import { cn } from '@/healpers/className';
 import { RowElement, RowView } from '@/components/Row';
 import { Component } from '@/components/core';
 import { DefaultState } from '@t/components';
-import { aria$ } from '@/utils/dom';
+import { create$, find$ } from '@/utils/dom';
 
 export interface HeaderState extends DefaultState {}
 
@@ -15,21 +15,21 @@ export default class HeaderElement extends Component<HeaderView, HeaderState> {
   }
 
   renderHeaderRows() {
-    const $render = this.view.$target.querySelector(cn('.', 'table', ' tbody'));
+    const $render = find$(cn('.', 'table', ' tbody'), this.view.$target);
     if (!$render) return;
     const instance = this.state.instance;
     const { headerRowCount, indexColumnHeaderInfoMap } = instance.column;
     const arr = Array.from({ length: headerRowCount }, (_, i) => i + 1);
-    $render.innerHTML = arr.map((rowindex) => `<tr role="row" ${aria$({ rowindex })}></tr>`).join('');
-    const type = 'header';
-    const Rows = arr.map((rowindex) => {
-      const Row = new RowElement(new RowView(`.${instance.root} tr[${aria$({ rowindex })}]`), {
-        type,
+    $render.innerHTML = '';
+    this.Rows = arr.map((rowindex) => {
+      const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex } });
+      $render.appendChild($tr);
+      const Row = new RowElement(new RowView($tr), {
+        type: 'header',
         instance,
         columnHeaderInfos: indexColumnHeaderInfoMap[rowindex],
       });
       return Row;
     });
-    this.Rows = Rows;
   }
 }

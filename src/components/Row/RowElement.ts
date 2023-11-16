@@ -2,7 +2,7 @@ import { Component } from '@/components/core';
 import RowView from './RowView';
 import { DefaultState } from '@t/components';
 import { ColumnHeaderInfo, GroupColumnInfo } from '@t/instance/column';
-import { aria$ } from '@/utils/dom';
+import { create$ } from '@/utils/dom';
 import { ColumnElement, ColumnView } from '@/components/Column';
 import { CellElement, CellView } from '../Cell';
 import { SourceData } from '@t/instance/source';
@@ -46,14 +46,12 @@ export default class RowElement extends Component<RowView, RowState> {
     const { instance, columnHeaderInfos } = this.state;
     const visibleColumnHeaderInfos = columnHeaderInfos.filter(({ visible }) => visible);
 
-    $target.innerHTML = visibleColumnHeaderInfos.map(({ colindex }) => `<td ${aria$({ colindex })}></td>`).join('');
+    $target.innerHTML = '';
     this.Columns = visibleColumnHeaderInfos.map((columnHeaderInfo) => {
       const { colindex } = columnHeaderInfo;
-      const Column = new ColumnElement(new ColumnView(`${this.view.selector} td[${aria$({ colindex })}]`), {
-        columnHeaderInfo,
-        instance,
-      });
-      return Column;
+      const $td = create$('td', { role: 'columnheader', ariaAttr: { colindex } });
+      $target.appendChild($td);
+      return new ColumnElement(new ColumnView($td), { columnHeaderInfo, instance });
     });
   }
 
@@ -65,16 +63,13 @@ export default class RowElement extends Component<RowView, RowState> {
     const { data } = this.state;
     const { column } = instance;
     const { visibleColumnInfos } = column;
-    $target.innerHTML = visibleColumnInfos.map(({ colindex }) => `<td ${aria$({ colindex })}></td>`).join('');
+
+    $target.innerHTML = '';
     this.Cells = visibleColumnInfos.map((columnInfo) => {
       const { colindex } = columnInfo;
-      const Cell = new CellElement(new CellView(`${this.view.selector} td[${aria$({ colindex })}]`), {
-        type: 'data',
-        columnInfo,
-        instance,
-        data,
-      });
-      return Cell;
+      const $td = create$('td', { role: 'gridcell', ariaAttr: { colindex } });
+      $target.appendChild($td);
+      return new CellElement(new CellView($td), { type: 'data', columnInfo, instance, data });
     });
   }
 }

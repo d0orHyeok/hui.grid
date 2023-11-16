@@ -3,7 +3,7 @@ import ScrollbarView from './ScrollbarView';
 import { DefaultState } from '@t/components';
 import { cn } from '@/healpers/className';
 import { customScroll, customScrollDrag } from '@/healpers/scroll';
-import { on } from '@/utils/dom';
+import { find$, on } from '@/utils/dom';
 import { clamp } from '@/utils/common';
 
 export type ScrollbarPosition = 'vertical' | 'horizontal';
@@ -45,7 +45,7 @@ export default class ScrollbarElement extends Component<ScrollbarView, Scrollbar
       });
 
       // Bind scrolling event
-      const $container = document.querySelector(`.${root} .${cn('body')} .hui-grid-scroll-container`) as HTMLElement;
+      const $container = find$(`.${root} .${cn('body')} .hui-grid-scroll-container`) as HTMLElement;
       const fns = { getStart: scrollTop, getMax: () => coords().maxScrollTop };
       customScroll('y', $container, fns, scrollTop);
 

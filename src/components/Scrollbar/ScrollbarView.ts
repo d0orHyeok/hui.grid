@@ -1,11 +1,11 @@
 import { View } from '@/components/core';
-import { on } from '@/utils/dom';
+import { find$, on } from '@/utils/dom';
 
 const THUMB_ACTIVE = 'hui-scrollthumb-active';
 
 export default class ScrollbarView extends View {
   get $thumb() {
-    return this.$target.querySelector('.hui-scrollthumb') as HTMLDivElement;
+    return find$('.hui-scrollthumb', this.$target) as HTMLDivElement;
   }
 
   bindEvents(): void {
@@ -14,7 +14,7 @@ export default class ScrollbarView extends View {
 
   private handleActive() {
     let isActive = false;
-    const $html = document.querySelector('html') as HTMLElement;
+    const $html = find$('html') as HTMLElement;
     on(this.$thumb, 'mousedown', () => {
       (isActive = true), this.$thumb.classList.add(THUMB_ACTIVE);
     });

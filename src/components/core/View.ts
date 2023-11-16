@@ -1,5 +1,5 @@
 import { entries } from '@/utils/common';
-import { off, on } from '@/utils/dom';
+import { findAll$, off, on } from '@/utils/dom';
 import { AriaAttributes, AriaRole, CSSProperties, EvtListener } from '@t/html';
 import { DataObject } from '@t/index';
 
@@ -8,15 +8,12 @@ import { DataObject } from '@t/index';
  */
 export default class View<T extends HTMLElement = HTMLElement> {
   #isRender: boolean;
-  #selector: string;
+  #target: T;
 
-  constructor(selector: string) {
+  constructor(element: Element) {
+    if (!element?.nodeType) throw new Error(`Contructor value "element" is not valid element`);
     this.#isRender = false;
-    this.#selector = selector;
-  }
-
-  get selector() {
-    return this.#selector;
+    this.#target = element as T;
   }
 
   get isRender() {
@@ -27,7 +24,7 @@ export default class View<T extends HTMLElement = HTMLElement> {
    * target element to render
    */
   get $target(): T {
-    return document.querySelector(this.selector) as T;
+    return this.#target;
   }
 
   /**
@@ -47,11 +44,7 @@ export default class View<T extends HTMLElement = HTMLElement> {
    * Render, replace DOM content to virtual DOM content
    */
   render() {
-    const $target = this.$target;
-    if (!$target) return;
-    const $new = $target.cloneNode(true) as T;
-    $new.innerHTML = this.template();
-    this.$target?.replaceWith($new);
+    this.$target.innerHTML = this.template();
     this.bindEvents();
     this.#isRender = true;
   }
@@ -126,7 +119,7 @@ export default class View<T extends HTMLElement = HTMLElement> {
     const $el = this.$target;
     if (!$el) return;
     if (classList.length) {
-      classList.forEach((className) => $el.querySelectorAll(className).forEach((el) => el.classList.add('hui-hidden')));
+      classList.forEach((className) => findAll$(className, $el).forEach((el) => el.classList.add('hui-hidden')));
     } else $el.classList.add('hui-hidden');
   }
 
@@ -137,9 +130,7 @@ export default class View<T extends HTMLElement = HTMLElement> {
     const $el = this.$target;
     if (!$el) return;
     if (classList.length) {
-      classList.forEach((className) =>
-        $el.querySelectorAll(className).forEach((el) => el.classList.remove('hui-hidden'))
-      );
+      classList.forEach((className) => findAll$(className, $el).forEach((el) => el.classList.remove('hui-hidden')));
     } else $el.classList.remove('hui-hidden');
   }
 }

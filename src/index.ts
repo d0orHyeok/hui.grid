@@ -1,7 +1,7 @@
 import IHuiGrid, { DataObject, OptionOpt } from '@t/index';
 import { OptGrid } from '@t/options';
 import { isString, isUndefined } from '@/utils/common';
-import { createNode } from './utils/dom';
+import { create$, find$ } from './utils/dom';
 import observable from './observable';
 import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
@@ -30,7 +30,7 @@ class HuiGrid implements IHuiGrid {
    */
   constructor(element: Element | string, options: OptGrid) {
     // Find parent node
-    const parent = isString(element) ? document.querySelector(element) : element;
+    const parent = isString(element) ? find$(element) : element;
     if (!parent) throw new Error(`Invalid element: ${element}`);
 
     // Check options
@@ -39,7 +39,7 @@ class HuiGrid implements IHuiGrid {
     this._options = opts;
 
     // Create grid base element
-    const $element = createNode('div', {
+    const $element = create$('div', {
       role: 'grid',
       classList: ['hui-grid', 'hui-grid-container'],
       ariaAttr: { label: 'Hui Data Grid' },
@@ -58,15 +58,15 @@ class HuiGrid implements IHuiGrid {
     this._instance = instance;
 
     // Render Grid
-    const Header = new HeaderElement(new HeaderView(cn(`.${root} .`, 'header')), { instance });
+    const Header = new HeaderElement(new HeaderView(find$(cn(`.${root} .`, 'header')) as HTMLElement), { instance });
     const nodata = observable(() => opts().nodata);
-    const Body = new BodyElement(new BodyView(cn(`.${root} .`, 'body')), { nodata, instance });
+    const Body = new BodyElement(new BodyView(find$(cn(`.${root} .`, 'body')) as HTMLElement), { nodata, instance });
     const HorizontalScrollbar = new ScrollbarElement(
-      new ScrollbarView(cn(`.${root} .`, 'body', ` .${cn('hscrollbar')}`)),
+      new ScrollbarView(find$(cn(`.${root} .`, 'hscrollbar')) as HTMLElement),
       { position: 'horizontal', instance }
     );
     const VerticalScrollbar = new ScrollbarElement(
-      new ScrollbarView(cn(`.${root} .`, 'body', ` .${cn('vscrollbar')}`)),
+      new ScrollbarView(find$(cn(`.${root} .`, 'vscrollbar')) as HTMLElement),
       { position: 'vertical', instance }
     );
 
