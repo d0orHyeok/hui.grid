@@ -24,7 +24,7 @@ export default class ScrollbarElement extends Component<ScrollbarView, Scrollbar
       const { rowCoords } = this.state.instance;
       const { coords } = rowCoords;
       coords.subscribe((state) => {
-        const { scrollThumbHeight, translateY, scrollbarHeight } = state;
+        const { scrollbarHeight, scrollThumbHeight, translateY } = state;
         const isDiabled = scrollThumbHeight >= scrollbarHeight;
         this.view[isDiabled ? 'hide' : 'show']();
         $thumb.style.height = scrollThumbHeight + 'px';

@@ -10,11 +10,12 @@ export interface RowCoordsParam {
 }
 
 export interface VerticaScrolllCoords {
-  scrollbarHeight: number;
-  translateY: number;
-  scrollThumbHeight: number;
-  scrollHeight: number;
   maxScrollTop: number;
+  scrollbarHeight: number;
+  scrollHeight: number;
+  scrollThumbHeight: number;
+  totalRowHeight: number;
+  translateY: number;
 }
 
 export interface RowCoords {

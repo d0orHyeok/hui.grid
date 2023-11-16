@@ -8,6 +8,7 @@ const classMap = {
   scrollWrapper: 'hui-grid-scroll-wrapper',
   scrollContainer: 'hui-grid-scroll-container',
   scrollContent: 'hui-grid-scroll-content',
+  scrollable: 'hui-grid-scrollable-container',
   scrollbar: 'hui-scrollbar',
   vscrollbar: 'hui-vertical-scrollbar',
   hscrollbar: 'hui-horizontal-scrollbar',

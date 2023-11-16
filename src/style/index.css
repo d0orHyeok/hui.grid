@@ -63,6 +63,11 @@
   border-right-width: 0;
 }
 
+.hui-grid .hui-grid-scrollable-container tr:last-child,
+.hui-grid .hui-grid-scrollable-container td {
+  border-bottom-width: 0;
+}
+
 /* Header */
 
 .hui-grid-table-fixed {

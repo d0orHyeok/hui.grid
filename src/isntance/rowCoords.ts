@@ -38,11 +38,12 @@ export function create({ demension, source, viewport }: RowCoordsParam): RowCoor
     );
 
     const item = {
-      scrollbarHeight,
-      translateY,
-      scrollThumbHeight,
-      scrollHeight,
       maxScrollTop: Math.max(scrollHeight - viewportHeight, 0),
+      scrollbarHeight,
+      scrollHeight,
+      scrollThumbHeight,
+      totalRowHeight,
+      translateY,
     };
     return item;
   });

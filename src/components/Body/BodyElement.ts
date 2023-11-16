@@ -62,11 +62,17 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   }
 
   private _syncViewport() {
-    const { viewport } = this.state.instance;
+    const {
+      viewport,
+      rowCoords: { coords },
+    } = this.state.instance;
+    const $container = find$(cn('.', 'scrollContainer'), this.view.$target);
     const resizeObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
         const { width, height } = entry.contentRect;
         viewport({ width, height });
+        const isYScrollable = coords().totalRowHeight > height;
+        if ($container) $container.classList[isYScrollable ? 'add' : 'remove'](cn('scrollable'));
       });
     });
     resizeObserver.observe(this.view.$target);
