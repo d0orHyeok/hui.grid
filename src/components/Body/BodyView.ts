@@ -9,8 +9,9 @@ export default class BodyView extends View {
           <div class="${cn('scrollContent')}">
             <div class="hui-grid-table-content">
               <table role="presentation" class="${cns('table', 'tableFixed').join(' ')}" >
-                <tbody role="presentation">
-                </tbody>
+                <thead role="presentation"></thead>
+                <tbody role="presentation"></tbody>
+                <tfoot role="presentation"></tfoot>
               </table>
             </div>
           </div >

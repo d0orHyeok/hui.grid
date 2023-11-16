@@ -101,11 +101,12 @@ interface CreateNodeOptions {
   dataset: { [key: string]: string | boolean | number };
   ariaAttr: AriaAttributes;
   type: string;
+  attr: { [key: string]: string | boolean | number };
 }
 
 export function createNode<K extends keyof HTMLElementTagNameMap>(tagName: K, options: Partial<CreateNodeOptions>) {
   const $el = document.createElement(tagName);
-  const { id, className, classList, role, style, dataset, ariaAttr, type } = options;
+  const { id, className, classList, role, style, dataset, ariaAttr, type, attr } = options;
   if (id) $el.id = id;
   if (className) $el.classList.add(className);
   if (Array.isArray(classList)) $el.classList.add(...classList);
@@ -117,7 +118,10 @@ export function createNode<K extends keyof HTMLElementTagNameMap>(tagName: K, op
   if (dataset) entries(dataset, (key, value) => ($el.dataset[key] = `${value}`));
   if (ariaAttr)
     // @ts-ignore
-    entries(ariaAttr, (key, value) => ($el[`aria${key.at(0).toUpperCase() + key.substring(1)}`] = `${value}`));
+    entries(ariaAttr, (key, value) => $el.setAttribute(`aria-${key}`, value));
+  if (attr)
+    // @ts-ignore
+    entries(attr, (key, value) => $el.setAttribute(key, value));
   return $el;
 }
 
