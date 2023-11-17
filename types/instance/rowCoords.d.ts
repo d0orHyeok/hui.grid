@@ -9,7 +9,7 @@ export interface RowCoordsParam {
   viewport: Viewport;
 }
 
-export interface VerticaScrolllCoords {
+export interface VerticalScrolllCoords {
   maxScrollTop: number;
   scrollbarHeight: number;
   scrollHeight: number;
@@ -19,5 +19,5 @@ export interface VerticaScrolllCoords {
 
 export interface RowCoords {
   scrollTop: Observable<number>;
-  coords: Observable<VerticaScrolllCoords>;
+  coords: Observable<VerticalScrolllCoords>;
 }

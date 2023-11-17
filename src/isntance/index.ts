@@ -7,6 +7,7 @@ import { create as createColumn } from '@/isntance/column';
 import { create as createDemension } from '@/isntance/demension';
 import { create as createRowCoords } from '@/isntance/rowCoords';
 import { create as createViewport } from '@/isntance/viewport';
+import { create as createColumnCoords } from '@/isntance/columnCoords';
 import { generateId } from '@/utils/common';
 
 export default function createInstance(opts: Observable<OptGrid>): Instance {
@@ -22,6 +23,8 @@ export default function createInstance(opts: Observable<OptGrid>): Instance {
   const source = createSource(sourceParam);
   // Create RowCoords
   const rowCoords = createRowCoords({ demension, source, viewport });
+  // Create ColumnCoords
+  const columnCoords = createColumnCoords({ column, viewport });
 
-  return { root, column, demension, source, rowCoords, viewport };
+  return { root, column, columnCoords, demension, rowCoords, source, viewport };
 }

@@ -61,6 +61,7 @@ class HuiGrid implements IHuiGrid {
     const Header = new HeaderElement(new HeaderView(find$(cn(`.${root} .`, 'header')) as HTMLElement), { instance });
     const nodata = observable(() => opts().nodata);
     const Body = new BodyElement(new BodyView(find$(cn(`.${root} .`, 'body')) as HTMLElement), { nodata, instance });
+
     const HorizontalScrollbar = new ScrollbarElement(
       new ScrollbarView(find$(cn(`.${root} .`, 'hscrollbar')) as HTMLElement),
       { position: 'horizontal', instance }

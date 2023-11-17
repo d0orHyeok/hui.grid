@@ -18,8 +18,8 @@ const datas = Array.from({ length: 80 }, (_, i) => {
 
 const grid = new HuiGrid('#app', {
   columns: [
-    { dataField: 'key' },
-    { dataField: 'name' },
+    { dataField: 'key', minWidth: 300 },
+    { dataField: 'name', width: '120px' },
     { caption: 'group', columns: [{ dataField: 'scroe' }, { dataField: 'progress' }] },
   ],
 });

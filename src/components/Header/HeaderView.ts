@@ -6,6 +6,7 @@ export default class HeaderView extends View {
     return /*html*/ `
       <div class="${cn('scrollContainer')}" role="presentation">
         <table class="${cns('table', 'tableFixed').join(' ')}" role="presentation">
+          <colgroup></colgroup>
           <tbody role="presentation">
           </tbody>
         </table>
