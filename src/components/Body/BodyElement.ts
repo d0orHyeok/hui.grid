@@ -41,18 +41,15 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   }
 
   private _syncOffsetsAndData() {
-    const {
-      source,
-      rowCoords: { offsets },
-    } = this.state.instance;
+    const { source } = this.state.instance;
     let prevOffset = [0, 0];
 
     source.store.subscribe((cur, prev) => {
       if (isEqual(cur, prev)) return;
-      this._renderDatas(cur, offsets());
+      this._renderDatas(cur, source.offsets());
     }, true);
 
-    offsets.subscribe((cur) => {
+    source.offsets.subscribe((cur) => {
       if (isEqual(cur, prevOffset)) return;
       prevOffset = cur;
       const items = source.items();
@@ -71,7 +68,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       entries.forEach((entry) => {
         const { width, height } = entry.contentRect;
         viewport({ width, height });
-        const isYScrollable = coords().totalRowHeight > height;
+        const isYScrollable = coords().scrollHeight > height;
         if ($container) $container.classList[isYScrollable ? 'add' : 'remove'](cn('scrollable'));
       });
     });

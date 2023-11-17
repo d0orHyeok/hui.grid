@@ -1,0 +1,136 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+td,
+th {
+  padding: 0;
+}
+
+td {
+  padding: 3px 6px;
+}
+
+[aria-hidden='true'] {
+  display: none !important;
+}
+
+/* Table border */
+
+table tr,
+table td {
+  border: 1px solid #d3d3d3;
+  color: #333;
+  font-size: 14px;
+}
+
+/* Body */
+
+.wrapper {
+  position: relative;
+  width: 300px;
+  height: 320px;
+}
+
+.container {
+  height: calc(100% + 1px);
+  margin-top: -1px;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid #d3d3d3;
+  border-left-width: 0;
+  border-right-width: 0;
+}
+
+.scroll-content {
+  position: relative;
+  overflow-anchor: none;
+  min-width: 100%;
+  min-height: 100%;
+  display: block;
+  float: left;
+}
+
+.scroll-content::before,
+.scroll-content::after {
+  display: table;
+  content: '';
+  line-height: 0;
+}
+
+.scroll-content::after {
+  clear: both;
+}
+
+.content {
+  min-height: 100%;
+  overflow-anchor: none;
+  position: relative;
+}
+
+/* Scrollbar */
+.sb {
+  position: absolute;
+  pointer-events: auto;
+  top: 0;
+  right: 0;
+  height: 100%;
+  transition: background-color 0.5s linear 1s;
+}
+
+.sb:hover,
+.sb:has(.sb-thumb-active) {
+  background-color: rgba(207, 218, 233, 0.33);
+  transition: background-color 0.15s linear 0.15s;
+}
+
+.sb .sb-thumb {
+  width: 8px;
+  height: 0;
+  padding: 0 2px;
+  transition:
+    width 0.2s linear 0.15s,
+    transform 0.1s ease-in-out;
+}
+
+.sb:hover .sb-thumb,
+.sb .sb-thumb-active {
+  width: 15px;
+}
+
+.sb-thumb-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: background-color 0.5s linear 1s;
+}
+
+.sb-thumb-content::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: transparent;
+  transition: background-color 0.15s linear 0.15s;
+}
+
+.wrapper:hover .sb-thumb-content {
+  transition: background-color 0.15s linear 0.15s;
+  background-color: #b4b4b4;
+}
+
+.sb-thumb:is(:active, .sb-thumb-active) .sb-thumb-content::after {
+  background-color: rgba(56, 149, 225, 0.8);
+}

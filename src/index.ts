@@ -87,8 +87,8 @@ class HuiGrid implements IHuiGrid {
   }
 
   public setData(datas: DataObject[]) {
-    const source = this._instance.source;
-    source.setData(datas);
+    const opts = this._options;
+    opts({ ...opts(), datas });
   }
 
   public option<K extends keyof OptionOpt>(option: K | Partial<OptionOpt>, value?: OptionOpt[K]) {

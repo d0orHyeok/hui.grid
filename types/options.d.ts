@@ -85,7 +85,7 @@ export interface OptColumn {
   /** Specifies a caption for the column. */
   caption?: string;
   /** Specifies a custom template for data cells. */
-  cellTemplate?: Function; // Experimental
+  cellTemplate?: CellTemplate; // Experimental
   /** Specifies a CSS class */
   className?: string;
   /** An array of grid columns. */

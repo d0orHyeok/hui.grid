@@ -14,12 +14,10 @@ export interface VerticaScrolllCoords {
   scrollbarHeight: number;
   scrollHeight: number;
   scrollThumbHeight: number;
-  totalRowHeight: number;
   translateY: number;
 }
 
 export interface RowCoords {
   scrollTop: Observable<number>;
-  offsets: Observable<number[]>;
   coords: Observable<VerticaScrolllCoords>;
 }

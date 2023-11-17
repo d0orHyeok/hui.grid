@@ -9,6 +9,7 @@ const defaultKeyField = 'key';
 export function create(param: SourceParams): Source {
   const store = observable<SourceData[]>([]);
   const changes = observable<SourceChanges>({});
+  const offsets = observable<number[]>([0, 0]);
 
   function update(key: string, data: Partial<DataObject>) {
     const exist = changes()[key] ?? {};
@@ -24,17 +25,22 @@ export function create(param: SourceParams): Source {
   }
 
   const source: Source = {
-    _key: param().keyExpr ?? defaultKeyField,
-    get key() {
-      return this._key;
-    },
-    set key(key: string) {
-      this._key = key;
-    },
-    _changes: changes,
+    key: param().keyExpr ?? defaultKeyField,
+    changes,
+    offsets,
     store,
+    clear() {
+      this.setData([]);
+    },
+    insert(...datas: DataObject[]) {
+      datas.forEach((data) => {
+        const key = data[this.key] ?? generateId();
+        changes()[key] = { type: 'insert', key, data };
+      });
+      changes.publish();
+    },
     items: () => store(),
-    changes: () => Object.values(changes()),
+    remove,
     setData(datas: DataObject[]) {
       changes({});
       const arr = store();
@@ -46,18 +52,7 @@ export function create(param: SourceParams): Source {
       });
       store.publish();
     },
-    insert(...datas: DataObject[]) {
-      datas.forEach((data) => {
-        const key = data[this.key] ?? generateId();
-        changes()[key] = { type: 'insert', key, data };
-      });
-      changes.publish();
-    },
     update,
-    remove,
-    clear() {
-      this.setData([]);
-    },
   };
 
   param.subscribe((cur, prev) => {
@@ -65,7 +60,7 @@ export function create(param: SourceParams): Source {
     const { keyExpr, datas } = cur;
     source.key = keyExpr ?? defaultKeyField;
     source.setData(datas ?? []);
-  });
+  }, true);
 
   return source;
 }

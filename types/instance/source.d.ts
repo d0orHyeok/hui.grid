@@ -14,17 +14,16 @@ export interface SourceData {
 }
 
 export interface Source {
-  _key: string;
   key: string;
-  readonly _changes: Observable<SourceChanges>;
+  readonly changes: Observable<SourceChanges>;
+  readonly offsets: Observable<number[]>;
   readonly store: Observable<SourceData[]>;
-  items: () => SourceData[];
-  changes: () => SourceChangeItem[];
-  setData: (datas: DataObject[]) => void;
-  insert: (...datas: DataObject[]) => void;
-  update: (key: string, data: Partial<DataObject>) => void;
-  remove: (key: string) => void;
   clear: () => void;
+  insert: (...datas: DataObject[]) => void;
+  items: () => SourceData[];
+  remove: (key: string) => void;
+  setData: (datas: DataObject[]) => void;
+  update: (key: string, data: Partial<DataObject>) => void;
 }
 
 export type SourceChangeItem<T extends DataObject = DataObject> =

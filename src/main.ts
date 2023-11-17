@@ -1,13 +1,13 @@
 import HuiGrid from '@/index';
 import '@/style/index.css';
 
-const $app = document.getElementById('app');
-if ($app) $app.style.height = '320px';
+const $app = document.getElementById('app') as HTMLElement;
+$app.style.height = '320px';
 
 const names = ['Alice', 'John', 'Simth', 'Jane', 'Brus', 'Saya', 'Minjun'];
 const nameSize = names.length;
 
-const datas = Array.from({ length: 9 }, (_, i) => {
+const datas = Array.from({ length: 80 }, (_, i) => {
   return {
     key: `rowkey${i}`,
     name: names[Math.floor(Math.random() * 100) % nameSize],

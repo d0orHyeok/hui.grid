@@ -6,7 +6,7 @@ export interface DemensionParams {
 }
 
 export type Demension = Observable<{
-  readonly height: number | string;
-  readonly rowHeight: number;
-  readonly width: number | string;
+  height: number | string;
+  rowHeight: number;
+  width: number | string;
 }>;
