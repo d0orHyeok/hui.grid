@@ -1,7 +1,7 @@
 import IHuiGrid, { DataObject, OptionOpt } from '@t/index';
 import { OptGrid } from '@t/options';
 import { isString, isUndefined } from '@/utils/common';
-import { create$, find$ } from './utils/dom';
+import { create$, find$, findAll$ } from './utils/dom';
 import observable from './observable';
 import { Observable } from '@t/observable';
 import { Instance } from '@t/instance';
@@ -10,6 +10,7 @@ import { cn } from '@/healpers/className';
 import { HeaderElement, HeaderView } from '@/components/Header';
 import { BodyElement, BodyView } from '@/components/Body';
 import { ScrollbarElement, ScrollbarView } from './components/Scrollbar';
+import { ColGroupElement, ColGroupView } from './components/ColGroup';
 
 interface ComponentMap {
   Header: HeaderElement;
@@ -61,7 +62,8 @@ class HuiGrid implements IHuiGrid {
     const Header = new HeaderElement(new HeaderView(find$(cn(`.${root} .`, 'header')) as HTMLElement), { instance });
     const nodata = observable(() => opts().nodata);
     const Body = new BodyElement(new BodyView(find$(cn(`.${root} .`, 'body')) as HTMLElement), { nodata, instance });
-
+    const $colGroups = findAll$(cn('.', 'table', ' colgroup'), $element);
+    $colGroups.forEach(($el) => new ColGroupElement(new ColGroupView($el), { instance }));
     const HorizontalScrollbar = new ScrollbarElement(
       new ScrollbarView(find$(cn(`.${root} .`, 'hscrollbar')) as HTMLElement),
       { position: 'horizontal', instance }
