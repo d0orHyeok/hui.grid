@@ -227,7 +227,8 @@
 .hui-vertical-scrollbar .hui-scrollthumb {
   width: 8px;
   height: 0;
-  padding: 0 2px;
+  padding-right: 1px;
+  padding-left: 2px;
   transition:
     width 0.2s linear 0.15s,
     transform 0.1s ease-in-out;

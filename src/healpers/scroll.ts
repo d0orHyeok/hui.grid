@@ -90,8 +90,13 @@ export function customScroll(
     animationId = requestAnimationFrame(frameScroll);
   }
 
-  on($container, 'wheel', (event) => {
-    const isScroll = direction === 'x' ? event.shiftKey : !event.shiftKey;
-    if (isScroll) moveScroll(event.deltaY);
-  });
+  on(
+    $container,
+    'wheel',
+    (event) => {
+      const isScroll = direction === 'x' ? event.shiftKey : !event.shiftKey;
+      if (isScroll) moveScroll(event.deltaY);
+    },
+    { passive: true }
+  );
 }
