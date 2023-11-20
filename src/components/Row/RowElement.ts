@@ -23,6 +23,10 @@ export type RowTypedState =
   | {
       type: 'data';
       data: SourceData;
+    }
+  | {
+      type: 'virtual';
+      height: number;
     };
 
 export default class RowElement extends Component<RowView, RowState> {
@@ -32,10 +36,19 @@ export default class RowElement extends Component<RowView, RowState> {
   init(): void {
     this.view.setRowType(this.state.type);
     // Set rowHeight
-    this.view.style({ height: this.state.instance.demension().rowHeight + 'px' });
+    if (this.state.type !== 'virtual') this.view.style({ height: this.state.instance.demension().rowHeight + 'px' });
     // Render columns
     this.renderColumnHeaders();
     this.renderDataCells();
+    this.renderVirtualCells();
+  }
+
+  renderVirtualCells() {
+    if (this.state.type !== 'virtual') return;
+    const { height, instance } = this.state;
+    const { length } = instance.column.visibleColumnInfos;
+    const tds = Array.from({ length }, (_) => `<td style="height: ${height}px"></td>`).join('');
+    this.view.$target.innerHTML = tds;
   }
 
   renderColumnHeaders() {

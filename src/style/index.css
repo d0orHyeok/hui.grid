@@ -68,6 +68,11 @@
   border-bottom-width: 0;
 }
 
+.hui-grid .hui-grid-virtual-row,
+.hui-grid .hui-grid-virtual-row td {
+  border-width: 0 !important;
+}
+
 /* Header */
 
 .hui-grid-table-fixed {

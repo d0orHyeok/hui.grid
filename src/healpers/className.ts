@@ -16,6 +16,7 @@ const classMap = {
   headerRow: 'hui-grid-header-row',
   dataRow: 'hui-grid-data-row',
   groupRow: 'hui-grid-group-row',
+  virtualRow: 'hui-grid-virtual-row',
 };
 
 export type ClassMapKey = keyof typeof classMap;

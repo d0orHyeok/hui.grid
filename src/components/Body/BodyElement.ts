@@ -42,18 +42,26 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
   private _syncOffsetsAndData() {
     const { source } = this.state.instance;
+    const { store, offsets } = source;
     let prevOffset = [0, 0];
+    let prevItems: SourceData[] = [];
 
-    source.store.subscribe((cur, prev) => {
-      if (isEqual(cur, prev)) return;
-      this._renderDatas(cur, source.offsets());
-    }, true);
+    store.subscribe((items) => {
+      if (!isEqual(prevItems, items)) {
+        prevItems = items;
+        this._cleanRows();
+        const ofsets = offsets();
+        this._syncVirtualSpace(items.length, ofsets);
+        this._renderDatas(items, ofsets);
+      }
+    });
 
-    source.offsets.subscribe((cur) => {
+    offsets.subscribe((cur) => {
       if (isEqual(cur, prevOffset)) return;
-      prevOffset = cur;
       const items = source.items();
-      this._syncSpace(items.length, cur);
+      const dataSize = items.length;
+      prevOffset = cur;
+      this._syncVirtualSpace(dataSize, cur);
       this._renderDatas(items, cur);
     });
   }
@@ -75,38 +83,54 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     resizeObserver.observe(this.view.$target);
   }
 
+  private _cleanRows() {
+    this.rowMap.clear();
+    const { $thead, $tbody, $tfoot } = this.view;
+    [$thead, $tbody, $tfoot].forEach(($el) => ($el.innerHTML = ''));
+  }
+
   /**
    * Sync virtual top & bottom space height
    * @param {number} dataSize
-   * @param {[number, number]} offset
+   * @param {[number, number]} offsets
    */
-  private _syncSpace(dataSize: number, offset: number[]) {
-    const $tbody = find$(cn('.', 'table', ' tbody'), this.view.$target);
-    if (!$tbody) return;
-    const $thead = $tbody.previousElementSibling as HTMLElement;
-    const $tfoot = $tbody.nextElementSibling as HTMLElement;
-    const [startIndex, endIndex] = offset;
+  private _syncVirtualSpace(dataSize: number, offsets: number[]) {
+    const { $thead, $tfoot } = this.view;
+    const [startIndex, endIndex] = offsets;
 
     const rowHeight = this.state.instance.demension().rowHeight;
     const virtualTopHeight = Math.max(startIndex * rowHeight, 0);
     const virtualBottomHeight = Math.max((dataSize - endIndex) * rowHeight, 0);
 
-    if (virtualTopHeight === 0) $thead.innerHTML = '';
-    else $thead.innerHTML = `<tr role="row" style="height:${virtualTopHeight}px"><td></td></tr>`;
-    if (virtualBottomHeight === 0) $tfoot.innerHTML = '';
-    else $tfoot.innerHTML = `<tr role="row" style="height:${virtualBottomHeight}px"><td></td></tr>`;
+    const rowMap = this.rowMap;
+
+    const createElem = ($target: HTMLElement, rowindex: number, height: number) => {
+      if (height === 0) {
+        rowMap.delete(rowindex);
+        $target.innerHTML = '';
+      } else {
+        const item = rowMap.get(rowindex);
+        if (item) item.element.querySelectorAll('td').forEach(($el) => ($el.style.height = height + 'px'));
+        else {
+          const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex } });
+          const Row = new RowElement(new RowView($tr), { instance: this.state.instance, height, type: 'virtual' });
+          rowMap.set(rowindex, { element: $tr, component: Row });
+          $target.appendChild($tr);
+        }
+      }
+    };
+
+    createElem($thead, 0, virtualTopHeight);
+    createElem($tfoot, dataSize + 1, virtualBottomHeight);
   }
 
-  private _renderDatas(datas: SourceData[], offset: number[]) {
-    const dataSize = datas.length;
+  private _renderDatas(datas: SourceData[], offsets: number[]) {
+    const { $tbody } = this.view;
+    const dataSize = offsets[1];
     this.view[dataSize ? 'hide' : 'show'](cn('.', 'nodata'));
 
-    const $tbody = find$(cn('.', 'table', ' tbody'), this.view.$target);
-    if (!$tbody) return;
-
-    if (!this.rowMap) this.rowMap = new Map();
     const rowMap = this.rowMap;
-    const [startIndex, endIndex] = offset;
+    const [startIndex, endIndex] = offsets;
 
     datas.forEach((data, index) => {
       const rowindex = index + 1;

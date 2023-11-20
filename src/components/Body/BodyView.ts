@@ -1,7 +1,27 @@
 import { cn, cns } from '@/healpers/className';
 import { View } from '@/components/core';
+import { find$ } from '@/utils/dom';
 
 export default class BodyView extends View {
+  #tbody?: HTMLElement;
+
+  get $tbody() {
+    if (this.#tbody) return this.#tbody;
+    else {
+      const $tbody = find$(cn('.', 'table', ' tbody'), this.$target) as HTMLElement;
+      this.#tbody = $tbody;
+      return $tbody;
+    }
+  }
+
+  get $thead() {
+    return this.$tbody.previousElementSibling as HTMLElement;
+  }
+
+  get $tfoot() {
+    return this.$tbody.nextElementSibling as HTMLElement;
+  }
+
   template(): string {
     return /*html*/ `
       <div class="${cn('scrollWrapper')}">
