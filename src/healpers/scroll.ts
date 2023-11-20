@@ -1,5 +1,7 @@
 import { clamp, isNull } from '@/utils/common';
 import { animationThrottle, find$, on } from '@/utils/dom';
+import { ColumnCoords } from '@t/instance/columnCoords';
+import { RowCoords } from '@t/instance/rowCoords';
 
 interface MoveScrollElementParam {
   scrollbar: Element;
@@ -7,7 +9,7 @@ interface MoveScrollElementParam {
 }
 
 export function customScrollDrag(
-  direction: 'x' | 'y',
+  direction: 'X' | 'Y',
   scrollElements: MoveScrollElementParam,
   onTranslate: (translateDelta: number) => any
 ) {
@@ -15,7 +17,7 @@ export function customScrollDrag(
   const $target = scrollElements.scrollbar as HTMLElement;
   const $thumb = scrollElements.scrollthumb as HTMLElement;
 
-  const eventKey: 'pageX' | 'pageY' = `page${direction.toUpperCase()}` as any;
+  const eventKey: 'pageX' | 'pageY' = `page${direction}`;
 
   let start: number | null = null;
   let prevUserSelect = '';
@@ -49,17 +51,8 @@ export function customScrollDrag(
   }
 }
 
-interface CustomScrollHelperFuctions {
-  getStart: () => number;
-  getMax: () => number;
-}
-
-export function customScroll(
-  direction: 'x' | 'y',
-  container: Element,
-  { getMax, getStart }: CustomScrollHelperFuctions,
-  onScroll: (scrollPos: number) => any
-) {
+export function customScroll(direction: 'X' | 'Y', container: Element, coordsInstance: ColumnCoords | RowCoords) {
+  const { scrollPos, coords } = coordsInstance;
   const $container = container as HTMLElement; // scrollable target
   const duration = 120; // scroll animation duration
 
@@ -70,20 +63,20 @@ export function customScroll(
 
   function moveScroll(delta: number) {
     if (animationId < 0) {
-      start = getStart();
+      start = scrollPos();
       animationDelta = 0;
       animationStartTime = null;
     }
-    const maxScroll = getMax();
+    const maxScroll = coords().maxScrollPos;
     animationDelta += delta;
 
     const frameScroll = (currentTime: number) => {
       if (isNull(animationStartTime)) animationStartTime = currentTime; // Set startTime
       const time = currentTime - animationStartTime;
       const radio = Math.min(time / duration, 1);
-      const scrollPos = start + animationDelta * radio;
-      onScroll(clamp(scrollPos, 0, maxScroll));
-      if (scrollPos > maxScroll || scrollPos < 0) return cancelAnimationFrame(animationId), (animationId = -1);
+      const pos = start + animationDelta * radio;
+      scrollPos(clamp(pos, 0, maxScroll));
+      if (pos > maxScroll || pos < 0) return cancelAnimationFrame(animationId), (animationId = -1);
       if (time < duration) animationId = requestAnimationFrame(frameScroll);
       else cancelAnimationFrame(animationId), (animationId = -1);
     };
@@ -94,7 +87,7 @@ export function customScroll(
     $container,
     'wheel',
     (event) => {
-      const isScroll = direction === 'x' ? event.shiftKey : !event.shiftKey;
+      const isScroll = direction === 'X' ? event.shiftKey : !event.shiftKey;
       if (isScroll) moveScroll(event.deltaY);
     },
     { passive: true }

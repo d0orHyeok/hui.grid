@@ -10,14 +10,14 @@ export interface RowCoordsParam {
 }
 
 export interface VerticalScrolllCoords {
-  maxScrollTop: number;
-  scrollbarHeight: number;
-  scrollHeight: number;
-  scrollThumbHeight: number;
-  translateY: number;
+  maxScrollPos: number;
+  scrollbarSize: number;
+  scrollSize: number;
+  scrollThumbSize: number;
+  translate: number;
 }
 
 export interface RowCoords {
-  scrollTop: Observable<number>;
+  scrollPos: Observable<number>;
   coords: Observable<VerticalScrolllCoords>;
 }

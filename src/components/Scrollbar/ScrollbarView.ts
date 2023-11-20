@@ -9,10 +9,14 @@ export default class ScrollbarView extends View {
   }
 
   bindEvents(): void {
-    this.handleActive();
+    this.handleScrollThumbActive();
   }
 
-  private handleActive() {
+  /**
+   * Handle scroll thumb active state
+   * @private
+   */
+  private handleScrollThumbActive() {
     let isActive = false;
     const $html = find$('html') as HTMLElement;
     on(this.$thumb, 'mousedown', () => {

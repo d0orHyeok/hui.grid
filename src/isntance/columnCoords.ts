@@ -86,17 +86,17 @@ export function create({ column, viewport }: ColumnCoordsParam): ColumnCoords {
     );
 
     return {
-      maxScrollLeft: Math.max(scrollWidth - viewportWidth),
-      scrollbarWidth,
-      scrollWidth,
-      scrollThumbWidth,
-      translateX,
+      maxScrollPos: Math.max(scrollWidth - viewportWidth),
+      scrollbarSize: scrollbarWidth,
+      scrollSize: scrollWidth,
+      scrollThumbSize: scrollThumbWidth,
+      translate: translateX,
       widths,
     };
   });
   const columnCoords: ColumnCoords = {
     coords,
-    scrollLeft,
+    scrollPos: scrollLeft,
   };
   return columnCoords;
 }

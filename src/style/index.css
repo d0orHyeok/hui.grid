@@ -218,6 +218,10 @@
     transform 0.1s ease-in-out;
 }
 
+.hui-horizontal-scrollbar:hover {
+  z-index: 1;
+}
+
 .hui-horizontal-scrollbar:hover .hui-scrollthumb,
 .hui-horizontal-scrollbar .hui-scrollthumb-active {
   height: 15px;
@@ -263,11 +267,7 @@
   transition: background-color 0.15s linear 0.15s;
 }
 
-.hui-grid-body:hover .hui-vertical-scrollbar .hui-scrollthumb-content {
-  transition: background-color 0.15s linear 0.15s;
-  background-color: #b4b4b4;
-}
-
+.hui-grid-body:hover .hui-vertical-scrollbar .hui-scrollthumb-content,
 .hui-grid-container:hover .hui-horizontal-scrollbar .hui-scrollthumb-content {
   transition: background-color 0.15s linear 0.15s;
   background-color: #b4b4b4;

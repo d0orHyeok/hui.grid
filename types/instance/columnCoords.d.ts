@@ -8,15 +8,15 @@ export interface ColumnCoordsParam {
 }
 
 export interface HorizontalScrolllCoords {
-  maxScrollLeft: number;
-  scrollbarWidth: number;
-  scrollWidth: number;
-  scrollThumbWidth: number;
-  translateX: number;
+  maxScrollPos: number;
+  scrollbarSize: number;
+  scrollSize: number;
+  scrollThumbSize: number;
+  translate: number;
   widths: number[];
 }
 
 export interface ColumnCoords {
   coords: Observable<HorizontalScrolllCoords>;
-  scrollLeft: Observable<number>;
+  scrollPos: Observable<number>;
 }

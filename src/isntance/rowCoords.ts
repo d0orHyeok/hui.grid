@@ -37,17 +37,17 @@ export function create({ demension, source, viewport }: RowCoordsParam): RowCoor
     );
 
     const item = {
-      maxScrollTop: Math.max(scrollHeight - viewportHeight, 0),
-      scrollbarHeight,
-      scrollHeight,
-      scrollThumbHeight,
-      translateY,
+      maxScrollPos: Math.max(scrollHeight - viewportHeight, 0),
+      scrollbarSize: scrollbarHeight,
+      scrollSize: scrollHeight,
+      scrollThumbSize: scrollThumbHeight,
+      translate: translateY,
     };
     return item;
   });
 
   return {
-    scrollTop,
+    scrollPos: scrollTop,
     coords,
   };
 }
