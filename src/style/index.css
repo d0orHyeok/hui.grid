@@ -51,8 +51,8 @@
 }
 
 .hui-grid .hui-grid-table tr {
-  border-right-width: 0;
   border-left-width: 0;
+  border-right-width: 0;
 }
 
 .hui-grid .hui-grid-table td:first-child {
@@ -71,6 +71,22 @@
 .hui-grid .hui-grid-virtual-row,
 .hui-grid .hui-grid-virtual-row td {
   border-width: 0 !important;
+}
+
+.hui-grid .hui-grid-table td.hui-focus::after {
+  content: '';
+  pointer-events: none;
+  user-select: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  border: #95c6ef solid 1px;
+}
+
+.hui-grid .hui-grid-table td.hui-focus:last-child::after {
+  right: 2px;
 }
 
 /* Header */
@@ -252,14 +268,10 @@
 
 /* Cell & Column */
 .hui-grid-table td {
+  position: relative;
   padding: 3px 6px;
   font-size: 12px;
   overflow: hidden;
-}
-
-.hui-grid .hui-grid-table td:focus {
-  outline-offset: -1px;
-  outline: #95c6ef solid 1px;
 }
 
 /* Column */

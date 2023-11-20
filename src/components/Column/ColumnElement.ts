@@ -19,7 +19,7 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     const { columnHeaderInfo } = this.state;
     const { colSpan, rowSpan, allowResizing, caption, className, headerCellTemplate } = columnHeaderInfo;
     if (isString(className)) $target.className = [$target.className, className].join(' ').trim();
-    $target.tabIndex = 0;
+    $target.tabIndex = -1;
     $target.colSpan = colSpan;
     $target.rowSpan = rowSpan;
     this.view.setCaption(caption);

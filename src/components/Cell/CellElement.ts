@@ -52,7 +52,7 @@ export default class CellElement extends Component<CellView, CellState> {
 
     const { trueText = 'true', falseText = 'false' } = booleanText ?? {};
     if (isString(className)) $target.className = [$target.className, className].join(' ').trim();
-    $target.tabIndex = 0;
+    $target.tabIndex = -1;
     const value = data.data[dataField];
     const displayValue = isFunction(calculateDisplayValue) ? calculateDisplayValue(data) : undefined;
     const cellValue = displayValue ?? (isFunction(calculateCellValue) ? calculateCellValue(data) : value);
