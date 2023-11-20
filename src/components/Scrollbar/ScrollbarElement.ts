@@ -18,6 +18,10 @@ export default class ScrollbarElement extends Component<ScrollbarView, Scrollbar
     this._makeScrollable();
   }
 
+  /**
+   * Sync scroll offsets
+   * @private
+   */
   private _syncScrollbarPosition() {
     const { $thumb } = this.view;
     if (this.state.position === 'vertical') {
@@ -45,6 +49,10 @@ export default class ScrollbarElement extends Component<ScrollbarView, Scrollbar
     }
   }
 
+  /**
+   * Make elements scrollable
+   * @private
+   */
   private _makeScrollable() {
     const { $thumb, $target } = this.view;
     const $container = $target.closest('.hui-grid-scroll-container') as HTMLElement;
@@ -107,8 +115,9 @@ export default class ScrollbarElement extends Component<ScrollbarView, Scrollbar
       });
 
       // Bind scrolling event
+      const $grid = find$(`.${root}`) as HTMLElement;
       const fns = { getStart: scrollLeft, getMax: () => coords().maxScrollLeft };
-      customScroll('x', $container, fns, scrollLeft);
+      customScroll('x', $grid, fns, scrollLeft);
 
       // Bind thumb drag event
       const onTranslate = (deltaTranslateX: number) => {

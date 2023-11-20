@@ -8,6 +8,7 @@
   --hui-grid-border-color: #d3d3d3;
   --hui-grid-progressbar-background: #2dc214;
   --hui-grid-color: #333;
+  --hui-grid-selection-border-color: #95c6ef;
 }
 
 .hui-hidden {
@@ -73,6 +74,10 @@
   border-width: 0 !important;
 }
 
+.hui-grid .hui-grid-table td:focus {
+  outline: none;
+}
+
 .hui-grid .hui-grid-table td.hui-focus::after {
   content: '';
   pointer-events: none;
@@ -82,7 +87,7 @@
   left: 0;
   bottom: 0;
   right: 0;
-  border: #95c6ef solid 1px;
+  border: var(--hui-grid-selection-border-color) solid 1px;
 }
 
 .hui-grid .hui-grid-table td.hui-focus:last-child::after {
@@ -258,7 +263,12 @@
   transition: background-color 0.15s linear 0.15s;
 }
 
-.hui-grid-body:hover .hui-scrollthumb-content {
+.hui-grid-body:hover .hui-vertical-scrollbar .hui-scrollthumb-content {
+  transition: background-color 0.15s linear 0.15s;
+  background-color: #b4b4b4;
+}
+
+.hui-grid-container:hover .hui-horizontal-scrollbar .hui-scrollthumb-content {
   transition: background-color 0.15s linear 0.15s;
   background-color: #b4b4b4;
 }
