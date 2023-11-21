@@ -1,6 +1,6 @@
 import { alignMap } from '@/healpers/dataMap';
 import observable from '@/observable';
-import { arrayToMap, isString, isUndefined, mapProp } from '@/utils/common';
+import { arrayToMap, isNumber, isString, isUndefined, mapProp } from '@/utils/common';
 import { DataObject } from '@t/index';
 import {
   Column,
@@ -97,7 +97,7 @@ function classifiyOptColumn(optColumns: OptColumn[]) {
       if (isString(dataField)) {
         if (duplicatedSet.has(dataField)) throw new Error(`DataField "${dataField}" is duplicated`);
         duplicatedSet.add(dataField);
-        if (groupIndex) optGroupColumns.push(optCol); // if opt column has 'groupIndex' push column
+        if (isNumber(groupIndex)) optGroupColumns.push(optCol); // if opt column has 'groupIndex' push column
       }
       // Make Column Index
       const colindex = (colindexMap.get(depth) ?? 0) + 1;
@@ -118,7 +118,9 @@ function classifiyOptColumn(optColumns: OptColumn[]) {
 
   const columnHeaderInfos = createAndClassification(optColumns) ?? [];
   const columnInfos = optDataColumns.map((optCol, index) => createColumnInfo(optCol, { colindex: index + 1 }));
-  const groupColumnInfos = optGroupColumns.map((optCol) => createGroupColumnInfo(optCol));
+  const groupColumnInfos = optGroupColumns
+    .sort((a, b) => (a.groupIndex as number) - (b.groupIndex as number))
+    .map((optCol) => createGroupColumnInfo(optCol));
   return { columnInfos, groupColumnInfos, columnHeaderInfos, rowSize };
 }
 
@@ -166,9 +168,6 @@ export function create(opts: Observable<OptGrid>): Column {
     },
     get visibleColumnInfos() {
       return this.columnInfos.filter(({ visible }) => visible);
-    },
-    get visibleGroupColumnInfo() {
-      return this.groupColumnInfos.filter(({ visible }) => visible);
     },
   };
   return column;

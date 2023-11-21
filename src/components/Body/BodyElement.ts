@@ -76,7 +76,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       entries.forEach((entry) => {
         const { width, height } = entry.contentRect;
         viewport({ width, height });
-        const isYScrollable = coords().scrollHeight > height;
+        const isYScrollable = coords().scrollSize > height;
         if ($container) $container.classList[isYScrollable ? 'add' : 'remove'](cn('scrollable'));
       });
     });

@@ -1,8 +1,7 @@
-import { HeaderColumnInfo } from '@t/instance/column';
-import { CellTemplate, DataType } from './../options.d';
 import {
   DataType,
   CalculateDisplayValue,
+  CellTemplate,
   GroupValueFunction,
   HorizontalAlign,
   OptCommonColumn,
@@ -20,9 +19,8 @@ export interface Column {
   headerRowCount: number;
   readonly columnDataFields: string[];
   readonly columnInfoMap: DataObject<ColumnInfo>;
-  readonly indexColumnHeaderInfoMap: DataObject<HeaderColumnInfo>;
+  readonly indexColumnHeaderInfoMap: DataObject<ColumnHeaderInfo[]>;
   readonly visibleColumnInfos: ColumnInfo[];
-  readonly visibleGroupColumnInfo: GroupColumnInfo[];
 }
 
 export interface ColumnInfo extends ColumnInfoData {
