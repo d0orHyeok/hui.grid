@@ -1,64 +1,108 @@
 import observable from '@/observable';
-import { generateId, isNull, isUndefined } from '@/utils/common';
+import { entries, generateId, isNull, isUndefined, values } from '@/utils/common';
 import { DataObject } from '@t/index';
-import { Source, SourceChanges, SourceData, SourceParams } from '@t/instance/source';
+import { Source, SourceMutation, SourceData, SourceParams, GroupSourceData } from '@t/instance/source';
 import { isEqual } from 'lodash-es';
 
 const defaultKeyField = 'key';
 
-export function create(param: SourceParams): Source {
+export function create({ opts, column }: SourceParams): Source {
+  const groupDataFields = column.groupColumnInfos.map(({ dataField }) => dataField);
+  const param = observable(() => ({ keyExpr: opts().keyExpr, datas: opts().datas }));
   const store = observable<SourceData[]>([]);
-  const changes = observable<SourceChanges>({});
+  const mutation = observable<SourceMutation>({});
   const offsets = observable<number[]>([0, 0]);
 
   function update(key: string, data: Partial<DataObject>) {
-    const exist = changes()[key] ?? {};
+    const exist = mutation()[key] ?? {};
     const prevUpdate = exist.type === 'update' ? exist.data : {};
     const nowUpdate = { ...prevUpdate, ...data };
-    changes()[key] = { type: 'update', key, data: nowUpdate };
-    changes.publish();
+    mutation({ ...mutation(), [key]: { type: 'update', key, data: nowUpdate } });
   }
 
-  function remove(key: string) {
-    changes()[key] = { type: 'remove', key };
-    changes.publish();
+  function setData(datas: DataObject[]) {
+    const { keyExpr } = param();
+    mutation({});
+    const storeDatas: SourceData[] = datas.map((data) => {
+      const key = data[keyExpr ?? defaultKeyField];
+      if (isUndefined(key) || isNull(key)) throw new Error(`There's no key field in data object`);
+      return { data, key, type: 'data' };
+    });
+    store(storeDatas);
+
+    if (!datas.length) return;
+
+    // Make id of group datas
+    const groupListMap = datas.reduce((obj: DataObject<SourceData[]>, data) => {
+      const keyList: any[] = [];
+      const item: SourceData = { type: 'data', key: data[keyExpr ?? defaultKeyField], data };
+      groupDataFields.forEach((dataField) => {
+        keyList.push(data[dataField]);
+        const id = JSON.stringify(keyList);
+        if (isUndefined(obj[id])) obj[id] = [item];
+        else obj[id].push(item);
+      });
+      return obj;
+    }, {});
+
+    // Make groupSourceData map
+    const groupDataMap: DataObject<GroupSourceData & { parent?: string }> = {};
+    entries(groupListMap, (id, items) => {
+      const keys: any[] = JSON.parse(id);
+      const parentKeyList = [...keys];
+      parentKeyList.pop();
+      const groupIndex = parentKeyList.length;
+      const groupField = groupDataFields[groupIndex];
+      const parent = groupIndex === 0 ? undefined : JSON.stringify(parentKeyList);
+      const obj: GroupSourceData & { parent?: string } = { type: 'group', keys, groupIndex, groupField, items, parent };
+      groupDataMap[id] = obj;
+    });
+
+    // Track parent node & replace items
+    const visitMap: DataObject<boolean> = {};
+    values(groupDataMap, (data) => {
+      const { parent, ...groupSourceData } = data;
+      if (parent) {
+        const parentNode = groupDataMap[parent];
+        if (!visitMap[parent]) (visitMap[parent] = true), (parentNode.items = []);
+        parentNode.items.push(groupSourceData);
+      }
+    });
+
+    // Make store datas
+    const results: GroupSourceData[] = [];
+    values(groupDataMap, (data) => {
+      const { parent, ...groupSourceData } = data;
+      if (!parent) results.push(groupSourceData);
+    });
+
+    console.log(results);
   }
 
   const source: Source = {
-    key: param().keyExpr ?? defaultKeyField,
-    changes,
+    keyExpr: param().keyExpr ?? defaultKeyField,
+    mutation,
     offsets,
     store,
-    clear() {
-      this.setData([]);
-    },
+    changes: () => Object.values(mutation()),
+    clear: () => setData([]),
     insert(...datas: DataObject[]) {
       datas.forEach((data) => {
-        const key = data[this.key] ?? generateId();
-        changes()[key] = { type: 'insert', key, data };
+        let key = data[this.keyExpr];
+        if (isUndefined(key)) (key = generateId), (data[this.keyExpr] = key);
+        mutation({ ...mutation(), [key]: { type: 'insert', key, data } });
       });
-      changes.publish();
     },
     items: () => store(),
-    remove,
-    setData(datas: DataObject[]) {
-      changes({});
-      const arr = store();
-      arr.length = 0;
-      datas.forEach((data) => {
-        const key = data[this.key];
-        if (isUndefined(key) || isNull(key)) throw new Error(`There's no key field in data object`);
-        arr.push({ data, key, type: 'data' });
-      });
-      store.publish();
-    },
+    remove: (key: string) => mutation({ ...mutation(), [key]: { type: 'remove', key } }),
+    setData,
     update,
   };
 
   param.subscribe((cur, prev) => {
     if (isEqual(cur, prev)) return;
     const { keyExpr, datas } = cur;
-    source.key = keyExpr ?? defaultKeyField;
+    source.keyExpr = keyExpr ?? defaultKeyField;
     source.setData(datas ?? []);
   }, true);
 
