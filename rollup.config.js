@@ -11,7 +11,7 @@ import pkg from './package.json' assert { type: 'json' };
 import tsc from './tsconfig.json' assert { type: 'json' };
 // Utils
 import { resolve } from 'path';
-import { __dirname, postcsssPlugins } from './options';
+import { __dirname, postcsssPlugins } from './options.js';
 
 const extensions = ['.ts', '.js', '.es', '.es6', '.mjs'];
 
@@ -63,7 +63,18 @@ export default [
       }),
       babel({
         babelHelpers: 'runtime',
-        presets: ['@babel/preset-env', '@babel/preset-typescript', '@babel/preset-flow'],
+        presets: [
+          [
+            '@babel/preset-env',
+            {
+              useBuiltIns: 'usage',
+              corejs: '3.33.3',
+              targets: '> 0.25%, not dead',
+            },
+          ],
+          '@babel/preset-typescript',
+          '@babel/preset-flow',
+        ],
         exclude: 'node_modules/**',
         include: 'src/**/*.(ts|js)',
         extensions,

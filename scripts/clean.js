@@ -1,6 +1,6 @@
 import fs from 'fs';
 import { resolve } from 'path';
-import { __dirname } from '../options';
+import { __dirname } from '../options.js';
 
 const distPath = resolve(__dirname, '..', 'dist');
 if (fs.existsSync(distPath)) {
