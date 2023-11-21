@@ -4,29 +4,28 @@ import { DefaultState } from '@t/components';
 import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
 import { isBoolean, isFunction, isObjKey, isString, isUndefined } from '@/utils/common';
 import { alignMap } from '@/healpers/dataMap';
-import { SourceData } from '@t/instance/source';
+import { StoreDataItem, StoreGroupItem } from '@t/instance/source';
 
 export type CellType = 'data' | 'group';
 
-export type CellState = DefaultState &
-  CellTypedState & {
-    type: CellType;
-  };
+export type CellState = DefaultState & CellTypedState;
 
 export type CellTypedState =
   | {
       type: 'data';
       columnInfo: ColumnInfo;
-      data: SourceData;
+      data: StoreDataItem;
     }
   | {
       type: 'group';
       groupColumnInfo: GroupColumnInfo;
+      data: StoreGroupItem;
     };
 
 export default class CellElement extends Component<CellView, CellState> {
   init(): void {
     this.renderDataCell();
+    this.renderGroupCell();
   }
 
   renderDataCell() {
@@ -79,5 +78,19 @@ export default class CellElement extends Component<CellView, CellState> {
     const dType = dataType ?? typeof value;
     const textAlign = isUndefined(align) ? (isObjKey(dType, alignMap) ? alignMap[dType] : undefined) : align;
     this.view.style({ textAlign, verticalAlign });
+  }
+
+  renderGroupCell() {
+    if (this.state.type !== 'group') return;
+    const { $target } = this.view;
+    this.view.role('gridcell');
+    const { data, groupColumnInfo, instance } = this.state;
+
+    const { booleanText, dataField, dataType, groupCellTemplate, groupIndex, groupValue } = groupColumnInfo;
+    const { trueText = 'true', falseText = 'false' } = booleanText ?? {};
+
+    $target.tabIndex = -1;
+    const value = data.keys[data.groupIndex];
+    this.view.setTemplate(value);
   }
 }

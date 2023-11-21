@@ -6,8 +6,8 @@ import { DefaultState } from '@t/components';
 import { Observable } from '@t/observable';
 import { cn } from '@/healpers/className';
 import { create$, find$ } from '@/utils/dom';
-import { RowElement, RowView } from '../Row';
-import { SourceData } from '@t/instance/source';
+import { RowElement, RowState, RowView } from '../Row';
+import { RenderStoreData, SourceData } from '@t/instance/source';
 
 export interface BodyState extends DefaultState {
   nodata: Observable<string | Element | undefined>;
@@ -42,11 +42,11 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
   private _syncOffsetsAndData() {
     const { source } = this.state.instance;
-    const { store, offsets } = source;
+    const { renderStore, offsets } = source;
     let prevOffset = [0, 0];
     let prevItems: SourceData[] = [];
 
-    store.subscribe((items) => {
+    renderStore.subscribe((items) => {
       if (!isEqual(prevItems, items)) {
         prevItems = items;
         this._cleanRows();
@@ -58,7 +58,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
     offsets.subscribe((cur) => {
       if (isEqual(cur, prevOffset)) return;
-      const items = source.items();
+      const items = renderStore();
       const dataSize = items.length;
       prevOffset = cur;
       this._syncVirtualSpace(dataSize, cur);
@@ -124,18 +124,20 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     createElem($tfoot, dataSize + 1, virtualBottomHeight);
   }
 
-  private _renderDatas(datas: SourceData[], offsets: number[]) {
+  private _renderDatas(datas: RenderStoreData[], offsets: number[]) {
     const { $tbody } = this.view;
-    const dataSize = offsets[1];
+    const dataSize = datas.length;
     this.view[dataSize ? 'hide' : 'show'](cn('.', 'nodata'));
+
+    const instance = this.state.instance;
 
     const rowMap = this.rowMap;
     const [startIndex, endIndex] = offsets;
 
-    datas.forEach((data, index) => {
-      const rowindex = index + 1;
+    datas.forEach((data) => {
+      const rowindex = data.rowindex;
       const item = rowMap.get(rowindex);
-      if (startIndex < rowindex && index < endIndex) {
+      if (startIndex < rowindex && rowindex <= endIndex) {
         if (!item?.element) {
           const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex }, style: { height: '32px' } });
           $tr.innerHTML = `<td>Row ${rowindex}</td>`;
@@ -147,7 +149,9 @@ export default class BodyElement extends Component<BodyView, BodyState> {
             );
             $tbody.insertBefore($tr, nextItem ?? null);
           }
-          const Row = new RowElement(new RowView($tr), { type: 'data', data, instance: this.state.instance });
+
+          const state = { type: data.type, data, instance } as RowState;
+          const Row = new RowElement(new RowView($tr), state);
           rowMap.set(rowindex, { element: $tr, component: Row });
         }
       } else {

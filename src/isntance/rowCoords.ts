@@ -11,7 +11,7 @@ export function create({ demension, source, viewport }: RowCoordsParam): RowCoor
   const scrollTop = observable(0);
 
   const coords = observable(() => {
-    const totalItemCount = source.items()?.length ?? 0;
+    const totalItemCount = source.renderStore().length ?? 0;
     const { rowHeight } = demension();
     const totalRowHeight = rowHeight * totalItemCount;
     const viewportHeight = viewport().height;

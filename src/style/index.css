@@ -1,16 +1,6 @@
 @import './reset.css';
 @import '../assets/icon/style.css';
 
-:root {
-  --hui-grid-header-background: #f0f0f0;
-  --hui-grid-border-width: 1px;
-  --hui-grid-border-style: solid;
-  --hui-grid-border-color: #d3d3d3;
-  --hui-grid-progressbar-background: #2dc214;
-  --hui-grid-color: #333;
-  --hui-grid-selection-border-color: #95c6ef;
-}
-
 .hui-hidden {
   display: none !important;
 }
@@ -21,6 +11,14 @@
 }
 
 .hui-grid {
+  --hui-grid-header-background: #f0f0f0;
+  --hui-grid-border-width: 1px;
+  --hui-grid-border-style: solid;
+  --hui-grid-border-color: #d3d3d3;
+  --hui-grid-progressbar-background: #2dc214;
+  --hui-grid-color: #333;
+  --hui-grid-selection-border-color: #95c6ef;
+
   position: relative;
   cursor: default;
   white-space: normal;
@@ -92,6 +90,14 @@
 
 .hui-grid .hui-grid-table td.hui-focus:last-child::after {
   right: 2px;
+}
+
+.hui-grid-table td.hui-grid-expander {
+  border: 0;
+}
+
+.hui-grid-table td.hui-grid-expander + td {
+  border-left: 0;
 }
 
 /* Header */

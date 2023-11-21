@@ -8,24 +8,33 @@ export interface SourceParams {
   column: Column;
 }
 
-export type SourceData = {
+export type SourceData = StoreDataItem | StoreGroupItem;
+
+export type StoreDataItem = {
   type: 'data';
   key: string;
   data: DataObject;
 };
 
-export type GroupSourceData = {
+export type StoreGroupItem = {
   type: 'group';
   keys: any[];
   groupIndex: number;
   groupField: string;
-  items: Array<GroupSourceData | SourceData>;
+  expanded: boolean;
+  items: Array<SourceData>;
+};
+
+export type RenderStoreData = SourceData & {
+  rowindex: number;
 };
 
 export interface Source {
   keyExpr: string;
+  readonly count: number;
   readonly mutation: Observable<SourceMutation>;
   readonly offsets: Observable<number[]>;
+  readonly renderStore: Observable<RenderStoreData[]>;
   readonly store: Observable<SourceData[]>;
   changes: () => SourceChange[];
   clear: () => void;

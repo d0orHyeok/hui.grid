@@ -1,6 +1,6 @@
 import observable from '@/observable';
 import { findIndexes, isString, isUndefined, mapProp, sum } from '@/utils/common';
-import { ColumnInfo } from '@t/instance/column';
+import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
 import { ColumnCoords, ColumnCoordsParam } from '@t/instance/columnCoords';
 import toPx from 'to-px';
 
@@ -41,10 +41,14 @@ function adjustWidths(widths: number[], contentWidth: number, fixedOpts: boolean
   return widths;
 }
 
-function calculateWidths(columnInfos: ColumnInfo[], contentsWidth: number) {
+function calculateWidths(contentsWidth: number, columnInfos: ColumnInfo[], groupColumnInfos: GroupColumnInfo[]) {
   const baseWidths: number[] = [];
   const minWidths: number[] = [];
-  columnInfos.forEach(({ minWidth, width }) => {
+  groupColumnInfos.forEach(() => {
+    baseWidths.push(0);
+    minWidths.push(20);
+  });
+  columnInfos.forEach(({ width, minWidth }) => {
     minWidths.push(minWidth ?? 0);
     if (isString(width)) {
       if (width.at(-1) === '%') baseWidths.push((contentsWidth * parseFloat(width)) / 100);
@@ -67,10 +71,10 @@ export function create({ column, viewport }: ColumnCoordsParam): ColumnCoords {
   const scrollLeft = observable(0);
 
   const coords = observable(() => {
-    const { visibleColumnInfos } = column;
+    const { visibleColumnInfos, groupColumnInfos } = column;
 
     const viewportWidth = viewport().width;
-    const widths = calculateWidths(visibleColumnInfos, viewportWidth);
+    const widths = calculateWidths(viewportWidth, visibleColumnInfos, groupColumnInfos);
     const scrollWidth = sum(widths);
 
     const thumbRatio = viewportWidth / scrollWidth;

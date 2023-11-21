@@ -1,17 +1,113 @@
 import observable from '@/observable';
 import { entries, generateId, isNull, isUndefined, values } from '@/utils/common';
 import { DataObject } from '@t/index';
-import { Source, SourceMutation, SourceData, SourceParams, GroupSourceData } from '@t/instance/source';
+import { GroupColumnInfo } from '@t/instance/column';
+import {
+  Source,
+  SourceMutation,
+  SourceData,
+  SourceParams,
+  StoreGroupItem,
+  StoreDataItem,
+  RenderStoreData,
+} from '@t/instance/source';
 import { isEqual } from 'lodash-es';
 
 const defaultKeyField = 'key';
 
+/**
+ * Create storeDataItem
+ * @param {DataObject} data
+ * @param {string} [keyExpr]
+ * @returns {StoreDataItem}
+ */
+function createDataItem(data: DataObject, keyExpr: string = defaultKeyField): StoreDataItem {
+  const key = data[keyExpr];
+  if (isUndefined(key) || isNull(key)) throw new Error(`There's no key field in data object`);
+  return { type: 'data', key, data };
+}
+
+interface TempStoreGroupItem extends StoreGroupItem {
+  parent?: string;
+}
+
+/**
+ * Create storeGroupItem list
+ * @param {DataObject} datas
+ * @param {GroupColumnInfo[]} groupColumnInfos
+ * @param {string} [keyExpr]
+ * @returns {StoreGroupItem[]}
+ */
+function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo[], keyExpr: string = defaultKeyField) {
+  const groupDataFields = groupColumnInfos.map(({ dataField }) => dataField);
+
+  // Make id of group datas
+  const groupListMap = datas.reduce((obj: DataObject<StoreDataItem[]>, data) => {
+    const keyList: any[] = [];
+    const item = createDataItem(data, keyExpr);
+    groupDataFields.forEach((dataField) => {
+      keyList.push(data[dataField]);
+      const id = JSON.stringify(keyList);
+      if (isUndefined(obj[id])) obj[id] = [item];
+      else obj[id].push(item);
+    });
+    return obj;
+  }, {});
+
+  // Make groupSourceData map
+  const groupDataMap: DataObject<TempStoreGroupItem> = {};
+  entries(groupListMap, (id, items) => {
+    const keys: any[] = JSON.parse(id);
+    const parentKeyList = [...keys];
+    parentKeyList.pop();
+    const groupIndex = parentKeyList.length;
+    const groupField = groupDataFields[groupIndex];
+    const parent = groupIndex === 0 ? undefined : JSON.stringify(parentKeyList);
+    const expanded = true;
+    const obj: TempStoreGroupItem = { type: 'group', keys, groupIndex, groupField, items, parent, expanded };
+    groupDataMap[id] = obj;
+  });
+
+  // Track parent node & replace items
+  const visitMap: DataObject<boolean> = {};
+  values(groupDataMap, (data) => {
+    const { parent, ...groupSourceData } = data;
+    if (parent) {
+      const parentNode = groupDataMap[parent];
+      if (!visitMap[parent]) (visitMap[parent] = true), (parentNode.items = []);
+      parentNode.items.push(groupSourceData);
+    }
+  });
+
+  // Make store datas
+  const results: StoreGroupItem[] = [];
+  values(groupDataMap, (data) => {
+    const { parent, ...groupSourceData } = data;
+    if (!parent) results.push(groupSourceData);
+  });
+
+  return results;
+}
+
 export function create({ opts, column }: SourceParams): Source {
-  const groupDataFields = column.groupColumnInfos.map(({ dataField }) => dataField);
   const param = observable(() => ({ keyExpr: opts().keyExpr, datas: opts().datas }));
   const store = observable<SourceData[]>([]);
   const mutation = observable<SourceMutation>({});
   const offsets = observable<number[]>([0, 0]);
+
+  const renderStore = observable(() => {
+    const sourceDatas = store();
+    const results: RenderStoreData[] = [];
+    let rowindex = 0;
+    const pushData = (item: SourceData, skip = false) => {
+      rowindex += 1;
+      if (!skip) results.push({ ...item, rowindex });
+      if (item.type !== 'group') return;
+      item.items.forEach((child) => pushData(child, !item.expanded || skip));
+    };
+    sourceDatas.forEach((data) => pushData(data));
+    return results;
+  });
 
   function update(key: string, data: Partial<DataObject>) {
     const exist = mutation()[key] ?? {};
@@ -21,68 +117,29 @@ export function create({ opts, column }: SourceParams): Source {
   }
 
   function setData(datas: DataObject[]) {
+    const { groupColumnInfos } = column;
     const { keyExpr } = param();
+
     mutation({});
-    const storeDatas: SourceData[] = datas.map((data) => {
-      const key = data[keyExpr ?? defaultKeyField];
-      if (isUndefined(key) || isNull(key)) throw new Error(`There's no key field in data object`);
-      return { data, key, type: 'data' };
-    });
-    store(storeDatas);
-
-    if (!datas.length) return;
-
-    // Make id of group datas
-    const groupListMap = datas.reduce((obj: DataObject<SourceData[]>, data) => {
-      const keyList: any[] = [];
-      const item: SourceData = { type: 'data', key: data[keyExpr ?? defaultKeyField], data };
-      groupDataFields.forEach((dataField) => {
-        keyList.push(data[dataField]);
-        const id = JSON.stringify(keyList);
-        if (isUndefined(obj[id])) obj[id] = [item];
-        else obj[id].push(item);
-      });
-      return obj;
-    }, {});
-
-    // Make groupSourceData map
-    const groupDataMap: DataObject<GroupSourceData & { parent?: string }> = {};
-    entries(groupListMap, (id, items) => {
-      const keys: any[] = JSON.parse(id);
-      const parentKeyList = [...keys];
-      parentKeyList.pop();
-      const groupIndex = parentKeyList.length;
-      const groupField = groupDataFields[groupIndex];
-      const parent = groupIndex === 0 ? undefined : JSON.stringify(parentKeyList);
-      const obj: GroupSourceData & { parent?: string } = { type: 'group', keys, groupIndex, groupField, items, parent };
-      groupDataMap[id] = obj;
-    });
-
-    // Track parent node & replace items
-    const visitMap: DataObject<boolean> = {};
-    values(groupDataMap, (data) => {
-      const { parent, ...groupSourceData } = data;
-      if (parent) {
-        const parentNode = groupDataMap[parent];
-        if (!visitMap[parent]) (visitMap[parent] = true), (parentNode.items = []);
-        parentNode.items.push(groupSourceData);
-      }
-    });
-
-    // Make store datas
-    const results: GroupSourceData[] = [];
-    values(groupDataMap, (data) => {
-      const { parent, ...groupSourceData } = data;
-      if (!parent) results.push(groupSourceData);
-    });
-
-    console.log(results);
+    if (groupColumnInfos.length) {
+      // if group
+      const sourceDatas = createGroupItems(datas, column.groupColumnInfos, keyExpr);
+      store(sourceDatas);
+    } else {
+      // if not group
+      const sourceDatas = datas.map((data) => createDataItem(data, keyExpr));
+      store(sourceDatas);
+    }
   }
 
   const source: Source = {
     keyExpr: param().keyExpr ?? defaultKeyField,
+    get count() {
+      return store().length;
+    },
     mutation,
     offsets,
+    renderStore,
     store,
     changes: () => Object.values(mutation()),
     clear: () => setData([]),

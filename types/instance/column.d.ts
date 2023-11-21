@@ -69,7 +69,7 @@ export interface GroupColumnInfo {
   dataField: string;
   dataType?: DataType;
   groupCellTemplate?: Function;
-  groupIndex?: number;
+  groupIndex: number;
   groupValue?: string | GroupValueFunction;
   visible: boolean;
 }
