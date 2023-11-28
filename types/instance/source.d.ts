@@ -31,6 +31,7 @@ export type RenderStoreData = SourceData & {
 
 export interface Source {
   keyExpr: string;
+  groupDataMap: DataObject<StoreDataItem[]>;
   readonly count: number;
   readonly mutation: Observable<SourceMutation>;
   readonly offsets: Observable<number[]>;

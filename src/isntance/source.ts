@@ -42,7 +42,7 @@ function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo
   const groupDataFields = groupColumnInfos.map(({ dataField }) => dataField);
 
   // Make id of group datas
-  const groupListMap = datas.reduce((obj: DataObject<StoreDataItem[]>, data) => {
+  const groupDataMap = datas.reduce((obj: DataObject<StoreDataItem[]>, data) => {
     const keyList: any[] = [];
     const item = createDataItem(data, keyExpr);
     groupDataFields.forEach((dataField) => {
@@ -55,8 +55,8 @@ function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo
   }, {});
 
   // Make groupSourceData map
-  const groupDataMap: DataObject<TempStoreGroupItem> = {};
-  entries(groupListMap, (id, items) => {
+  const sourceDataMap: DataObject<TempStoreGroupItem> = {};
+  entries(groupDataMap, (id, items) => {
     const keys: any[] = JSON.parse(id);
     const parentKeyList = [...keys];
     parentKeyList.pop();
@@ -65,15 +65,15 @@ function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo
     const parent = groupIndex === 0 ? undefined : JSON.stringify(parentKeyList);
     const expanded = true;
     const obj: TempStoreGroupItem = { type: 'group', keys, groupIndex, groupField, items, parent, expanded };
-    groupDataMap[id] = obj;
+    sourceDataMap[id] = obj;
   });
 
   // Track parent node & replace items
   const visitMap: DataObject<boolean> = {};
-  values(groupDataMap, (data) => {
+  values(sourceDataMap, (data) => {
     const { parent, ...groupSourceData } = data;
     if (parent) {
-      const parentNode = groupDataMap[parent];
+      const parentNode = sourceDataMap[parent];
       if (!visitMap[parent]) (visitMap[parent] = true), (parentNode.items = []);
       parentNode.items.push(groupSourceData);
     }
@@ -81,12 +81,12 @@ function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo
 
   // Make store datas
   const results: StoreGroupItem[] = [];
-  values(groupDataMap, (data) => {
+  values(sourceDataMap, (data) => {
     const { parent, ...groupSourceData } = data;
     if (!parent) results.push(groupSourceData);
   });
 
-  return results;
+  return { datas: results, groupDataMap };
 }
 
 export function create({ opts, column }: SourceParams): Source {
@@ -116,6 +116,8 @@ export function create({ opts, column }: SourceParams): Source {
     mutation({ ...mutation(), [key]: { type: 'update', key, data: nowUpdate } });
   }
 
+  const base: Source = { groupDataMap: {} } as Source;
+
   function setData(datas: DataObject[]) {
     const { groupColumnInfos } = column;
     const { keyExpr } = param();
@@ -123,8 +125,9 @@ export function create({ opts, column }: SourceParams): Source {
     mutation({});
     if (groupColumnInfos.length) {
       // if group
-      const sourceDatas = createGroupItems(datas, column.groupColumnInfos, keyExpr);
-      store(sourceDatas);
+      const results = createGroupItems(datas, column.groupColumnInfos, keyExpr);
+      base.groupDataMap = results.groupDataMap;
+      store(results.datas);
     } else {
       // if not group
       const sourceDatas = datas.map((data) => createDataItem(data, keyExpr));
@@ -132,7 +135,7 @@ export function create({ opts, column }: SourceParams): Source {
     }
   }
 
-  const source: Source = {
+  const extend = {
     keyExpr: param().keyExpr ?? defaultKeyField,
     get count() {
       return store().length;
@@ -154,7 +157,9 @@ export function create({ opts, column }: SourceParams): Source {
     remove: (key: string) => mutation({ ...mutation(), [key]: { type: 'remove', key } }),
     setData,
     update,
-  };
+  } as Source;
+
+  const source = Object.assign(base, extend);
 
   param.subscribe((cur, prev) => {
     if (isEqual(cur, prev)) return;
