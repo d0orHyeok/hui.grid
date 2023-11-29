@@ -283,6 +283,36 @@
   background-color: rgba(56, 149, 225, 0.8);
 }
 
+/* Resizer */
+.hui-grid.hui-grid-resizing {
+  cursor: col-resize;
+}
+
+.hui-grid-column-resizer.disabled {
+  display: none;
+}
+
+.hui-grid-column-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  right: 0;
+  cursor: col-resize;
+}
+
+.hui-grid-column-resizer::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 100%;
+  margin-left: auto;
+}
+
+.hui-grid-column-resizer:active::before {
+  background-color: rgba(56, 149, 225, 0.33);
+}
+
 /* Cell & Column */
 .hui-grid-table td {
   position: relative;
@@ -293,6 +323,7 @@
 
 /* Column */
 .hui-grid-table td[role='columnheader'] {
+  position: relative;
   text-align: center;
   vertical-align: middle;
   font-weight: bold;

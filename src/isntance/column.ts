@@ -58,7 +58,7 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
   return columnInfo;
 }
 
-function createHeaderColumnInfo(column: OptColumn, data: ColumnHeaderInfoData): ColumnHeaderInfo {
+function createColumnHeaderInfo(column: OptColumn, data: ColumnHeaderInfoData): ColumnHeaderInfo {
   const { allowResizing, caption, className, dataField, visible = true, width, headerCellTemplate, minWidth } = column;
 
   const columnInfo = {
@@ -66,17 +66,19 @@ function createHeaderColumnInfo(column: OptColumn, data: ColumnHeaderInfoData): 
     allowResizing,
     caption: caption ?? dataField ?? '',
     className,
+    dataField,
     headerCellTemplate,
     minWidth,
     visible,
     width,
   };
+
   return columnInfo;
 }
 
-function createGroupColumnInfo(column: OptColumn): GroupColumnInfo {
-  const { booleanText, dataField = '', dataType, groupCellTemplate, groupIndex, groupValue, visible = true } = column;
-  return { booleanText, dataField, dataType, groupCellTemplate, groupIndex, groupValue, visible };
+function createGroupColumnInfo(column: OptColumn, index: number): GroupColumnInfo {
+  const { booleanText, dataField = '', dataType, groupCellTemplate, groupValue, visible = true } = column;
+  return { booleanText, dataField, dataType, groupCellTemplate, groupIndex: index, groupValue, visible };
 }
 
 /**
@@ -108,11 +110,13 @@ function classifiyOptColumn(optColumns: OptColumn[]) {
       const rowSpan = childLength ? 1 : rowSize - depth + 1;
       // Create column info
       const data = { colSpan, rowSpan, colindex, rowindex: depth };
-      const headerColumnInfo = createHeaderColumnInfo(optCol, data);
+      const columnHeaderInfo = createColumnHeaderInfo(optCol, data);
       const children = createAndClassification(optCol.columns, depth + 1);
-      headerColumnInfo.columns = children;
-      if (!Array.isArray(children)) optDataColumns.push(optCol);
-      return headerColumnInfo;
+      columnHeaderInfo.columns = children;
+      if (!Array.isArray(children)) {
+        optDataColumns.push(optCol);
+      }
+      return columnHeaderInfo;
     });
   };
 
@@ -120,7 +124,8 @@ function classifiyOptColumn(optColumns: OptColumn[]) {
   const columnInfos = optDataColumns.map((optCol, index) => createColumnInfo(optCol, { colindex: index + 1 }));
   const groupColumnInfos = optGroupColumns
     .sort((a, b) => (a.groupIndex as number) - (b.groupIndex as number))
-    .map((optCol) => createGroupColumnInfo(optCol));
+    .map((optCol, index) => createGroupColumnInfo(optCol, index));
+
   return { columnInfos, groupColumnInfos, columnHeaderInfos, rowSize };
 }
 

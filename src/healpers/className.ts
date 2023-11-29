@@ -19,6 +19,8 @@ const classMap = {
   virtualRow: 'hui-grid-virtual-row',
   expander: 'hui-grid-expander',
   groupExpander: 'hui-grid-group-toggle',
+  resizer: 'hui-grid-column-resizer',
+  resizerWrapper: 'htui-grid-resizer-wrapper',
 };
 
 export type ClassMapKey = keyof typeof classMap;

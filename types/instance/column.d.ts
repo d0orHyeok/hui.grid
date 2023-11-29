@@ -51,6 +51,7 @@ export interface ColumnHeaderInfo extends ColumnHeaderInfoData {
   caption: string;
   className?: string;
   columns?: ColumnHeaderInfo[];
+  dataField?: string;
   headerCellTemplate?: Function;
   minWidth?: number;
   visible: boolean;
