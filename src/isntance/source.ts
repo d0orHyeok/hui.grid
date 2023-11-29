@@ -100,8 +100,7 @@ export function create({ opts, column }: SourceParams): Source {
     const pushData = (item: SourceData, skip = false) => {
       rowindex += 1;
       if (!skip) results.push(Object.assign(item, { rowindex }));
-      if (item.type !== 'group') return;
-      item.items.forEach((child) => pushData(child, !item.expanded || skip));
+      if (item.type === 'group') item.items.forEach((child) => pushData(child, !item.expanded || skip));
     };
     sourceDatas.forEach((data) => pushData(data));
     return results;
