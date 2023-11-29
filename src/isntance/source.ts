@@ -70,20 +70,18 @@ function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo
 
   // Track parent node & replace items
   const visitMap: DataObject<boolean> = {};
+  const results: StoreGroupItem[] = [];
+
   values(sourceDataMap, (data) => {
-    const { parent, ...groupSourceData } = data;
+    const parent = data.parent;
+    delete data.parent;
     if (parent) {
       const parentNode = sourceDataMap[parent];
       if (!visitMap[parent]) (visitMap[parent] = true), (parentNode.items = []);
-      parentNode.items.push(groupSourceData);
+      parentNode.items.push(data);
+    } else {
+      results.push(data);
     }
-  });
-
-  // Make store datas
-  const results: StoreGroupItem[] = [];
-  values(sourceDataMap, (data) => {
-    const { parent, ...groupSourceData } = data;
-    if (!parent) results.push(groupSourceData);
   });
 
   return { datas: results, groupDataMap };
@@ -101,7 +99,7 @@ export function create({ opts, column }: SourceParams): Source {
     let rowindex = 0;
     const pushData = (item: SourceData, skip = false) => {
       rowindex += 1;
-      if (!skip) results.push({ ...item, rowindex });
+      if (!skip) results.push(Object.assign(item, { rowindex }));
       if (item.type !== 'group') return;
       item.items.forEach((child) => pushData(child, !item.expanded || skip));
     };

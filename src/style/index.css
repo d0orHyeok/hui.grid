@@ -323,3 +323,17 @@
 .hui-grid-body .hui-grid-table td {
   text-overflow: ellipsis;
 }
+
+/* Group cell */
+.hui-grid-group-row .hui-grid-mark {
+  color: #ad1f24;
+}
+
+.hui-grid .hui-grid-group-toggle {
+  padding: 0;
+  cursor: pointer;
+}
+
+.hui-grid-group-toggle i {
+  font-size: 14px;
+}

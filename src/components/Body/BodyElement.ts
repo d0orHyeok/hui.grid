@@ -50,9 +50,9 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       if (!isEqual(prevItems, items)) {
         prevItems = items;
         this._cleanRows();
-        const ofsets = offsets();
-        this._syncVirtualSpace(items.length, ofsets);
-        this._renderDatas(items, ofsets);
+        const indexes = offsets();
+        this._syncVirtualSpace(items.length, indexes);
+        this._renderDatas(items, indexes);
       }
     });
 
@@ -134,10 +134,10 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const rowMap = this.rowMap;
     const [startIndex, endIndex] = offsets;
 
-    datas.forEach((data) => {
+    datas.forEach((data, index) => {
       const rowindex = data.rowindex;
       const item = rowMap.get(rowindex);
-      if (startIndex < rowindex && rowindex <= endIndex) {
+      if (startIndex <= index && index < endIndex) {
         if (!item?.element) {
           const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex }, style: { height: '32px' } });
           $tr.innerHTML = `<td>Row ${rowindex}</td>`;

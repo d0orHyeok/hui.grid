@@ -15,7 +15,7 @@ export default class CellView extends View<HTMLTableCellElement> {
     return !rowIndex ? -1 : Number(rowIndex);
   }
 
-  setTemplate(template: string | Node | Element) {
-    this.$target.replaceChildren(template);
+  setTemplate(...templates: Array<string | Node | Element>) {
+    this.$target.replaceChildren(...templates);
   }
 }

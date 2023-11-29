@@ -5,6 +5,7 @@ import { create$ } from '@/utils/dom';
 import { ColumnElement, ColumnView } from '@/components/Column';
 import { CellElement, CellView } from '../Cell';
 import { SourceData, StoreDataItem, StoreGroupItem } from '@t/instance/source';
+import { ExpanderElement, ExpanderView } from '../Expander';
 
 export type RowType = 'header' | 'virtual' | 'group' | 'data';
 
@@ -125,12 +126,13 @@ export default class RowElement extends Component<RowView, RowState> {
     const groupSize = groupColumnInfos.length;
     const colSize = visibleColumnInfos.length;
     groupColumnInfos.forEach((_, index) => {
-      if (index < data.groupIndex) {
+      if (index <= data.groupIndex) {
         const $td = create$('td', {
           role: 'columnheader',
           className: 'hui-grid-expander',
         });
         $target.appendChild($td);
+        if (index === data.groupIndex) new ExpanderElement(new ExpanderView($td), { instance, data });
       }
     });
 

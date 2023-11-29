@@ -5,6 +5,7 @@ import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
 import { isBoolean, isFunction, isObjKey, isString, isUndefined } from '@/utils/common';
 import { alignMap } from '@/healpers/dataMap';
 import { StoreDataItem, StoreGroupItem } from '@t/instance/source';
+import { create$ } from '@/utils/dom';
 
 export type CellType = 'data' | 'group';
 
@@ -85,12 +86,28 @@ export default class CellElement extends Component<CellView, CellState> {
     const { $target } = this.view;
     this.view.role('gridcell');
     const { data, groupColumnInfo, instance } = this.state;
-
-    const { booleanText, dataField, dataType, groupCellTemplate, groupIndex, groupValue } = groupColumnInfo;
+    const { source } = instance;
+    const { booleanText, dataField, dataType, groupCellTemplate, groupValue } = groupColumnInfo;
     const { trueText = 'true', falseText = 'false' } = booleanText ?? {};
 
+    const groupDataItems = source.groupDataMap[JSON.stringify(data.keys)];
+    const ItemLength = groupDataItems.length;
+
     $target.tabIndex = -1;
-    const value = data.keys[data.groupIndex];
-    this.view.setTemplate(value);
+    const value = isFunction(groupValue) ? groupValue(groupDataItems) : groupDataItems[0].data[groupValue ?? dataField];
+    const cellText = dataType === 'boolean' ? (value ? trueText : falseText) : value;
+
+    const $template = create$('div', { className: 'hui-grid-group-cell' });
+    if (isFunction(groupCellTemplate)) {
+      $template.appendChild(groupCellTemplate({}));
+    } else {
+      const text = document.createTextNode(cellText);
+      const $length = create$('span', { className: 'hui-grid-mark', style: { marginLeft: '4px' } });
+      $length.innerHTML = `(${ItemLength})`;
+      $template.appendChild(text);
+      $template.appendChild($length);
+    }
+
+    this.view.setTemplate($template);
   }
 }

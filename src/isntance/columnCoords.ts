@@ -46,7 +46,7 @@ function calculateWidths(contentsWidth: number, columnInfos: ColumnInfo[], group
   const minWidths: number[] = [];
   groupColumnInfos.forEach(() => {
     baseWidths.push(0);
-    minWidths.push(20);
+    minWidths.push(24);
   });
   columnInfos.forEach(({ width, minWidth }) => {
     minWidths.push(minWidth ?? 0);

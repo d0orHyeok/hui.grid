@@ -1,5 +1,6 @@
 import { DataObject } from '@t/index';
-import { ColumnInfo } from './instance/column';
+import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
+import { StoreDataItem } from './instance/source';
 
 export interface OptGrid extends Partial<OptCommonColumn> {
   /** Specifies the shortcut key that sets focus on the grid component. */
@@ -123,7 +124,7 @@ export interface OptColumn {
 
 export type DataType = 'string' | 'number' | 'boolean' | 'date' | 'progress';
 export type CalculateDisplayValue = (rowData: DataObject) => any;
-export type GroupValueFunction = (rowData: DataObject) => any;
+export type GroupValueFunction = (rowData: StoreDataItem[]) => any;
 export type SetCellValue = (newData: DataObject, value: any, rowData: DataObject) => void;
 export interface CellTempateParam {
   columnInfo: ColumnInfo;
@@ -134,3 +135,10 @@ export interface CellTempateParam {
   rowIndex: number;
 }
 export type CellTemplate = (param: CellTempateParam) => string | number | boolean | Date | Node | Element;
+export type GroupCellTemplateParam = {
+  groupColumnInfo: GroupColumnInfo;
+  keys: string[];
+  items: StoreDataItem[];
+  value: any;
+};
+export type GroupCellTemplate = (param: GroupCellTemplateParam) => string | number | boolean | Date | Node | Element;
