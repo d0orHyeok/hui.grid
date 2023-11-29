@@ -331,7 +331,12 @@
 
 .hui-grid .hui-grid-group-toggle {
   padding: 0;
+  text-align: center;
   cursor: pointer;
+}
+
+.hui-grid-group-toggle:hover {
+  color: rgb(6, 149, 225);
 }
 
 .hui-grid-group-toggle i {

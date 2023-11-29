@@ -41,15 +41,20 @@ function adjustWidths(widths: number[], contentWidth: number, fixedOpts: boolean
   return widths;
 }
 
-function calculateWidths(contentsWidth: number, columnInfos: ColumnInfo[], groupColumnInfos: GroupColumnInfo[]) {
+function calculateWidths(
+  contentsWidth: number,
+  columnInfos: ColumnInfo[],
+  groupColumnInfos: GroupColumnInfo[],
+  customWidths: Array<number | null> = []
+) {
   const baseWidths: number[] = [];
   const minWidths: number[] = [];
   groupColumnInfos.forEach(() => {
     baseWidths.push(0);
     minWidths.push(24);
   });
-  columnInfos.forEach(({ width, minWidth }) => {
-    minWidths.push(minWidth ?? 0);
+  columnInfos.forEach(({ width, minWidth }, index) => {
+    minWidths.push(Math.max(minWidth ?? 0, customWidths.at(index) ?? 0));
     if (isString(width)) {
       if (width.at(-1) === '%') baseWidths.push((contentsWidth * parseFloat(width)) / 100);
       else baseWidths.push(toPx(width) ?? 0);
@@ -61,20 +66,22 @@ function calculateWidths(contentsWidth: number, columnInfos: ColumnInfo[], group
   const adjWidths = adjustWidths(filledWidths, contentsWidth, fixedOpts);
   const resultWiths = applyMinWidth(
     adjWidths,
-    minWidths.map((min) => min || 20)
+    minWidths.map((min) => min || 32)
   );
 
   return resultWiths;
 }
 
 export function create({ column, viewport }: ColumnCoordsParam): ColumnCoords {
+  const { visibleColumnInfos, groupColumnInfos } = column;
+
   const scrollLeft = observable(0);
 
-  const coords = observable(() => {
-    const { visibleColumnInfos, groupColumnInfos } = column;
+  const customWidths = observable<Array<null | number>>(visibleColumnInfos.map(() => null));
 
+  const coords = observable(() => {
     const viewportWidth = viewport().width;
-    const widths = calculateWidths(viewportWidth, visibleColumnInfos, groupColumnInfos);
+    const widths = calculateWidths(viewportWidth, visibleColumnInfos, groupColumnInfos, customWidths());
     const scrollWidth = sum(widths);
 
     const thumbRatio = viewportWidth / scrollWidth;
@@ -98,8 +105,10 @@ export function create({ column, viewport }: ColumnCoordsParam): ColumnCoords {
       widths,
     };
   });
+
   const columnCoords: ColumnCoords = {
     coords,
+    customWidths,
     scrollPos: scrollLeft,
   };
   return columnCoords;

@@ -17,7 +17,7 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     const { $target } = this.view;
     this.view.role('columnheader');
     const { columnHeaderInfo } = this.state;
-    const { colSpan, rowSpan, allowResizing, caption, className, headerCellTemplate } = columnHeaderInfo;
+    const { colSpan, rowSpan, caption, className, headerCellTemplate } = columnHeaderInfo;
     if (isString(className)) $target.className = [$target.className, className].join(' ').trim();
     $target.tabIndex = -1;
     $target.colSpan = colSpan;

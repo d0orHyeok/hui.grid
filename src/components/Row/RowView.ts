@@ -5,6 +5,7 @@ import { isString } from '@/utils/common';
 
 export default class RowView extends View<HTMLTableRowElement> {
   template(): string {
+    this.role('row');
     return /*html*/ ``;
   }
 

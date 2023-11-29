@@ -114,7 +114,7 @@ interface CreateNodeOptions {
   attr: { [key: string]: string | boolean | number };
 }
 
-export function create$<K extends keyof HTMLElementTagNameMap>(tagName: K, options: Partial<CreateNodeOptions>) {
+export function create$<K extends keyof HTMLElementTagNameMap>(tagName: K, options: Partial<CreateNodeOptions> = {}) {
   const $el = document.createElement(tagName);
   const { id, className, classList, role, style, dataset, ariaAttr, type, attr } = options;
   if (id) $el.id = id;

@@ -15,8 +15,6 @@ import { ColGroupElement, ColGroupView } from './components/ColGroup';
 interface ComponentMap {
   Header: HeaderElement;
   Body: BodyElement;
-  HorizontalScrollbar: ScrollbarElement;
-  VerticalScrollbar: ScrollbarElement;
 }
 
 class HuiGrid implements IHuiGrid {
@@ -45,10 +43,6 @@ class HuiGrid implements IHuiGrid {
       classList: ['hui-grid', 'hui-grid-container'],
       ariaAttr: { label: 'Hui Data Grid' },
     });
-    $element.innerHTML = /*html*/ `
-      <div class="${cn('header')}" role="presentation"></div>
-      <div class="${cn('body')}" role="presentation"></div>
-    `;
     parent.appendChild($element);
     this._element = $element;
 
@@ -59,26 +53,28 @@ class HuiGrid implements IHuiGrid {
     this._instance = instance;
 
     // Render Grid
-    const Header = new HeaderElement(new HeaderView(find$(cn(`.${root} .`, 'header')) as HTMLElement), { instance });
+    const $header = create$('div');
+    $element.appendChild($header);
+    const Header = new HeaderElement(new HeaderView($header), { instance });
+
+    const $body = create$('div');
+    $element.appendChild($body);
     const nodata = observable(() => opts().nodata);
-    const Body = new BodyElement(new BodyView(find$(cn(`.${root} .`, 'body')) as HTMLElement), { nodata, instance });
+    const Body = new BodyElement(new BodyView($body), { nodata, instance });
+
     const $colGroups = findAll$(cn('.', 'table', ' colgroup'), $element);
     $colGroups.forEach(($el) => new ColGroupElement(new ColGroupView($el), { instance }));
-    const HorizontalScrollbar = new ScrollbarElement(
-      new ScrollbarView(find$(cn(`.${root} .`, 'hscrollbar')) as HTMLElement),
-      { position: 'horizontal', instance }
-    );
-    const VerticalScrollbar = new ScrollbarElement(
-      new ScrollbarView(find$(cn(`.${root} .`, 'vscrollbar')) as HTMLElement),
-      { position: 'vertical', instance }
-    );
 
-    this.compoentMap = {
-      Header,
-      Body,
-      HorizontalScrollbar,
-      VerticalScrollbar,
-    };
+    new ScrollbarElement(new ScrollbarView(find$(cn('.', 'hscrollbar'), $element) as HTMLElement), {
+      position: 'horizontal',
+      instance,
+    });
+    new ScrollbarElement(new ScrollbarView(find$(cn('.', 'vscrollbar'), $element) as HTMLElement), {
+      position: 'vertical',
+      instance,
+    });
+
+    this.compoentMap = { Header, Body };
   }
 
   /**

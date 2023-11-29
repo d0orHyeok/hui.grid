@@ -112,7 +112,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
         const item = rowMap.get(rowindex);
         if (item) item.element.querySelectorAll('td').forEach(($el) => ($el.style.height = height + 'px'));
         else {
-          const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex } });
+          const $tr = create$('tr', { ariaAttr: { rowindex } });
           const Row = new RowElement(new RowView($tr), { instance: this.state.instance, height, type: 'virtual' });
           rowMap.set(rowindex, { element: $tr, component: Row });
           $target.appendChild($tr);
@@ -139,7 +139,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       const item = rowMap.get(rowindex);
       if (startIndex <= index && index < endIndex) {
         if (!item?.element) {
-          const $tr = create$('tr', { role: 'row', ariaAttr: { rowindex }, style: { height: '32px' } });
+          const $tr = create$('tr', { ariaAttr: { rowindex }, style: { height: '32px' } });
           $tr.innerHTML = `<td>Row ${rowindex}</td>`;
           const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);
           if ($after) $tbody.insertBefore($tr, $after);

@@ -3,9 +3,10 @@ import RowView from './RowView';
 import { DefaultState } from '@t/components';
 import { create$ } from '@/utils/dom';
 import { ColumnElement, ColumnView } from '@/components/Column';
-import { CellElement, CellView } from '../Cell';
+import { CellElement, CellView } from '@/components/Cell';
 import { SourceData, StoreDataItem, StoreGroupItem } from '@t/instance/source';
-import { ExpanderElement, ExpanderView } from '../Expander';
+import { ExpanderElement, ExpanderView } from '@/components/Expander';
+import { cn } from '@/healpers/className';
 
 export type RowType = 'header' | 'virtual' | 'group' | 'data';
 
@@ -57,7 +58,7 @@ export default class RowElement extends Component<RowView, RowState> {
   renderColumnHeaders() {
     const { type } = this.state;
     const { $target } = this.view;
-    if (type !== 'header' || !$target) return;
+    if (type !== 'header') return;
     const { instance, rowindex } = this.state;
     const { column } = instance;
     const { headerRowCount, indexColumnHeaderInfoMap, groupColumnInfos } = column;
@@ -70,7 +71,7 @@ export default class RowElement extends Component<RowView, RowState> {
       groupColumnInfos.forEach(({ groupIndex }) => {
         const $td = create$('td', {
           role: 'columnheader',
-          className: 'hui-grid-expander',
+          className: cn('expander'),
           attr: { groupindex: groupIndex, rowspan: headerRowCount },
         });
         $target.appendChild($td);
@@ -88,7 +89,7 @@ export default class RowElement extends Component<RowView, RowState> {
   renderDataCells() {
     const { instance, type } = this.state;
     const { $target } = this.view;
-    if (type !== 'data' || !$target) return;
+    if (type !== 'data') return;
     const { data } = this.state;
     const { column } = instance;
     const { visibleColumnInfos, groupColumnInfos } = column;
@@ -96,10 +97,7 @@ export default class RowElement extends Component<RowView, RowState> {
     $target.innerHTML = '';
 
     groupColumnInfos.forEach(() => {
-      const $td = create$('td', {
-        role: 'columnheader',
-        className: 'hui-grid-expander',
-      });
+      const $td = create$('td', { role: 'gridcell', className: cn('expander') });
       $target.appendChild($td);
     });
 
@@ -114,7 +112,7 @@ export default class RowElement extends Component<RowView, RowState> {
   renderGroupCells() {
     const { instance, type } = this.state;
     const { $target } = this.view;
-    if (type !== 'group' || !$target) return;
+    if (type !== 'group') return;
     const { data } = this.state;
 
     const { column } = instance;
@@ -127,10 +125,7 @@ export default class RowElement extends Component<RowView, RowState> {
     const colSize = visibleColumnInfos.length;
     groupColumnInfos.forEach((_, index) => {
       if (index <= data.groupIndex) {
-        const $td = create$('td', {
-          role: 'columnheader',
-          className: 'hui-grid-expander',
-        });
+        const $td = create$('td', { role: 'gridcell', className: cn('expander') });
         $target.appendChild($td);
         if (index === data.groupIndex) new ExpanderElement(new ExpanderView($td), { instance, data });
       }

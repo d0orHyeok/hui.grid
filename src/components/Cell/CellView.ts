@@ -2,6 +2,7 @@ import { View } from '@/components/core';
 
 export default class CellView extends View<HTMLTableCellElement> {
   template(): string {
+    this.role('gridcell');
     return /*html*/ ``;
   }
 

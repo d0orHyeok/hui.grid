@@ -18,5 +18,6 @@ export interface HorizontalScrolllCoords {
 
 export interface ColumnCoords {
   coords: Observable<HorizontalScrolllCoords>;
+  customWidths: Observable<Array<number | null>>;
   scrollPos: Observable<number>;
 }

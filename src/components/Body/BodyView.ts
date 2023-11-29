@@ -23,6 +23,8 @@ export default class BodyView extends View {
   }
 
   template(): string {
+    this.role('presentation');
+    this.$target.classList.add(cn('body'));
     return /*html*/ `
       <div class="${cn('scrollWrapper')}">
         <div class="${cn('scrollContainer')}">
