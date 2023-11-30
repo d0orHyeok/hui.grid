@@ -331,8 +331,9 @@
 }
 
 .hui-grid-table td[role='columnheader'] .hui-grid-column-text {
-  display: inline-block;
+  display: block;
   text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .hui-grid-table td[role='columnheader'] .hui-grid-column-indicators {

@@ -1,6 +1,5 @@
 import { clamp, isNull } from '@/utils/common';
 import { animationThrottle, find$, on } from '@/utils/dom';
-import { Evt } from '@t/html';
 import { ColumnCoords } from '@t/instance/columnCoords';
 import { RowCoords } from '@t/instance/rowCoords';
 

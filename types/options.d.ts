@@ -1,5 +1,5 @@
 import { DataObject } from '@t/index';
-import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
+import { ColumnHeaderInfo, ColumnInfo, GroupColumnInfo } from '@t/instance/column';
 import { StoreDataItem } from './instance/source';
 
 export interface OptGrid extends Partial<OptCommonColumn> {
@@ -129,16 +129,20 @@ export type SetCellValue = (newData: DataObject, value: any, rowData: DataObject
 export interface CellTempateParam {
   columnInfo: ColumnInfo;
   columnIndex: number;
-  data: DataObject;
+  data: StoreDataItem;
   displayValue: any;
   value: any;
   rowIndex: number;
 }
-export type CellTemplate = (param: CellTempateParam) => string | number | boolean | Date | Node | Element;
+export type CellTemplate = (param: CellTempateParam) => any;
 export type GroupCellTemplateParam = {
   groupColumnInfo: GroupColumnInfo;
   keys: string[];
   items: StoreDataItem[];
   value: any;
 };
-export type GroupCellTemplate = (param: GroupCellTemplateParam) => string | number | boolean | Date | Node | Element;
+export type GroupCellTemplate = (param: GroupCellTemplateParam) => any;
+export type HeaderCellTemplateParam = {
+  columnHeaderInfo: ColumnHeaderInfo;
+};
+export type HeaderCellTemplate = (param: HeaderCellTemplateParam) => any;

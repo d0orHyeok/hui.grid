@@ -18,9 +18,8 @@ export default class ColumnView extends View<HTMLTableCellElement> {
     else $el.innerHTML = `<span class="hui-icon-sort-${option === 'asc' ? 'up' : 'down'}"></span>`;
   }
 
-  setCaption(template: any) {
-    const $el = find$('.hui-grid-column-text', this.$target);
-    if (!$el) return;
-    $el.innerHTML = template;
+  setTemplate(template: any) {
+    const $el = find$('.hui-grid-column-text', this.$target) as HTMLElement;
+    $el.replaceChildren(...template);
   }
 }

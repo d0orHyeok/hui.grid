@@ -2,7 +2,7 @@ import { DefaultState } from '@t/components';
 import { Component } from '../core';
 import ColumnView from './ColumnView';
 import { ColumnHeaderInfo } from '@t/instance/column';
-import { isString } from '@/utils/common';
+import { isFunction, isString } from '@/utils/common';
 import { find$, on } from '@/utils/dom';
 import { cn } from '@/healpers/className';
 import { Evt } from '@t/html';
@@ -26,7 +26,9 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     $target.tabIndex = -1;
     $target.colSpan = colSpan;
     $target.rowSpan = rowSpan;
-    this.view.setCaption(caption);
+
+    const template = isFunction(headerCellTemplate) ? headerCellTemplate({ columnHeaderInfo }) : caption;
+    this.view.setTemplate(template);
   }
 
   makeResizable() {
