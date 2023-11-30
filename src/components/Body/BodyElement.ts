@@ -86,7 +86,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
   private _cleanRows() {
     this.rowMap.clear();
     const { $thead, $tbody, $tfoot } = this.view;
-    [$thead, $tbody, $tfoot].forEach(($el) => ($el.innerHTML = ''));
+    [$tbody].forEach(($el) => ($el.innerHTML = ''));
   }
 
   /**

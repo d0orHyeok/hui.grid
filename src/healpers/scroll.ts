@@ -91,8 +91,7 @@ export function customScroll(direction: 'X' | 'Y', container: Element, coordsIns
       if (isScroll) {
         const delta = event.deltaY;
         const movePos = scrollPos() + delta;
-        if (movePos < 0 || movePos > coords().maxScrollPos) return;
-        event.preventDefault();
+        if (movePos >= 0 && movePos <= coords().maxScrollPos) event.preventDefault();
         moveScroll(delta);
       }
     },
