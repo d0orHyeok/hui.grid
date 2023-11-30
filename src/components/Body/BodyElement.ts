@@ -1,4 +1,4 @@
-import { isString } from '@/utils/common';
+import { isString, isUndefined } from '@/utils/common';
 import { isEqual } from 'lodash-es';
 import BodyView from './BodyView';
 import { Component } from '@/components/core';
@@ -49,7 +49,6 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     renderStore.subscribe((items) => {
       if (!isEqual(prevItems, items)) {
         prevItems = items;
-        this._cleanRows();
         const indexes = offsets();
         this._syncVirtualSpace(items.length, indexes);
         this._renderDatas(items, indexes);
@@ -83,12 +82,6 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     resizeObserver.observe(this.view.$target);
   }
 
-  private _cleanRows() {
-    this.rowMap.clear();
-    const { $thead, $tbody, $tfoot } = this.view;
-    [$tbody].forEach(($el) => ($el.innerHTML = ''));
-  }
-
   /**
    * Sync virtual top & bottom space height
    * @param {number} dataSize
@@ -102,22 +95,12 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const virtualTopHeight = Math.max(startIndex * rowHeight, 0);
     const virtualBottomHeight = Math.max((dataSize - endIndex) * rowHeight, 0);
 
-    const rowMap = this.rowMap;
-
     const createElem = ($target: HTMLElement, rowindex: number, height: number) => {
-      if (height === 0) {
-        rowMap.delete(rowindex);
-        $target.innerHTML = '';
-      } else {
-        const item = rowMap.get(rowindex);
-        if (item) item.element.querySelectorAll('td').forEach(($el) => ($el.style.height = height + 'px'));
-        else {
-          const $tr = create$('tr', { ariaAttr: { rowindex } });
-          const Row = new RowElement(new RowView($tr), { instance: this.state.instance, height, type: 'virtual' });
-          rowMap.set(rowindex, { element: $tr, component: Row });
-          $target.appendChild($tr);
-        }
-      }
+      const $item = $target.firstElementChild;
+      if (height === 0) return $item !== null && $item.remove();
+      const $tr = create$('tr', { ariaAttr: { rowindex } });
+      $target.replaceChildren($tr);
+      new RowElement(new RowView($tr), { instance: this.state.instance, height, type: 'virtual' });
     };
 
     createElem($thead, 0, virtualTopHeight);
@@ -133,31 +116,34 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
     const rowMap = this.rowMap;
     const [startIndex, endIndex] = offsets;
+    const renderSet = new Set<number>();
 
-    datas.forEach((data, index) => {
+    const states = [];
+
+    datas.slice(startIndex, endIndex).forEach((data) => {
       const rowindex = data.rowindex;
-      const item = rowMap.get(rowindex);
-      if (startIndex <= index && index < endIndex) {
-        if (!item?.element) {
-          const $tr = create$('tr', { ariaAttr: { rowindex }, style: { height: '32px' } });
-          $tr.innerHTML = `<td>Row ${rowindex}</td>`;
-          const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);
-          if ($after) $tbody.insertBefore($tr, $after);
-          else {
-            const nextItem = (Array.from($tbody.childNodes) as HTMLElement[]).find(
-              ($el) => rowindex < Number($el.ariaRowIndex)
-            );
-            $tbody.insertBefore($tr, nextItem ?? null);
-          }
+      renderSet.add(rowindex);
+      const $exist = find$(`[aria-rowindex="${rowindex}"`, $tbody);
+      if ($exist) return;
+      const $tr = create$('tr', { ariaAttr: { rowindex }, style: { height: '32px' } });
+      const state = { type: data.type, data, instance } as RowState;
 
-          const state = { type: data.type, data, instance } as RowState;
-          const Row = new RowElement(new RowView($tr), state);
-          rowMap.set(rowindex, { element: $tr, component: Row });
-        }
-      } else {
-        if (item?.element) item.element.remove();
-        rowMap.delete(rowindex);
-      }
+      const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);
+      if (!$after) {
+        const nextItem = (Array.from($tbody.childNodes) as HTMLElement[]).find(
+          ($el) => rowindex < Number($el.ariaRowIndex)
+        );
+        $tbody.insertBefore($tr, nextItem ?? null);
+      } else $tbody.insertBefore($tr, $after);
+
+      const Row = new RowElement(new RowView($tr), state);
+      rowMap.set(rowindex, { element: $tr, component: Row });
+    });
+
+    rowMap.forEach((item, rowindex) => {
+      if (renderSet.has(rowindex)) return;
+      if (item?.element) item.element.remove();
+      rowMap.delete(rowindex);
     });
   }
 }

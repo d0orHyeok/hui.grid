@@ -20,6 +20,7 @@ export default class ExpanderElement extends Component<ExpanderView, ExpanderSta
     this.view.on('click', (event) => {
       const isExpand = !event.currentTarget.querySelector('i')?.className.includes('expand');
       data.expanded = isExpand;
+      this.view.setIcon(isExpand);
       store.publish();
     });
   }
