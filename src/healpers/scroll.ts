@@ -1,5 +1,6 @@
 import { clamp, isNull } from '@/utils/common';
 import { animationThrottle, find$, on } from '@/utils/dom';
+import { Evt } from '@t/html';
 import { ColumnCoords } from '@t/instance/columnCoords';
 import { RowCoords } from '@t/instance/rowCoords';
 
@@ -88,8 +89,14 @@ export function customScroll(direction: 'X' | 'Y', container: Element, coordsIns
     'wheel',
     (event) => {
       const isScroll = direction === 'X' ? event.shiftKey : !event.shiftKey;
-      if (isScroll) moveScroll(event.deltaY);
+      if (isScroll) {
+        const delta = event.deltaY;
+        const movePos = scrollPos() + delta;
+        if (movePos < 0 || movePos > coords().maxScrollPos) return;
+        event.preventDefault();
+        moveScroll(delta);
+      }
     },
-    { passive: true }
+    { passive: false }
   );
 }
