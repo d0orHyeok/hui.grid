@@ -313,6 +313,43 @@
   background-color: rgba(56, 149, 225, 0.33);
 }
 
+/* Row */
+.hui-grid-animation-row {
+  height: var(--row-animation-height);
+}
+
+.hui-grid-animation-row td {
+  border-width: 0 !important;
+}
+
+.hui-grid-animation-row[aria-expanded='false'] {
+  animation: rowCollpasing ease 0.2s;
+}
+
+.hui-grid-animation-row[aria-expanded='true'] {
+  animation: rowExpanding ease 0.2s;
+}
+
+@keyframes rowExpanding {
+  0% {
+    height: 0;
+  }
+
+  100% {
+    height: var(--row-animation-height);
+  }
+}
+
+@keyframes rowCollpasing {
+  0% {
+    height: var(--row-animation-height);
+  }
+
+  100% {
+    height: 0;
+  }
+}
+
 /* Cell & Column */
 .hui-grid-table td {
   position: relative;

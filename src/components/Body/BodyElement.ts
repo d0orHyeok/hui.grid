@@ -1,11 +1,11 @@
-import { isString, isUndefined } from '@/utils/common';
+import { isString } from '@/utils/common';
 import { isEqual } from 'lodash-es';
 import BodyView from './BodyView';
 import { Component } from '@/components/core';
 import { DefaultState } from '@t/components';
 import { Observable } from '@t/observable';
 import { cn } from '@/healpers/className';
-import { create$, find$ } from '@/utils/dom';
+import { create$, find$, findAll$ } from '@/utils/dom';
 import { RowElement, RowState, RowView } from '../Row';
 import { RenderStoreData, SourceData } from '@t/instance/source';
 
@@ -118,8 +118,6 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const [startIndex, endIndex] = offsets;
     const renderSet = new Set<number>();
 
-    const states = [];
-
     datas.slice(startIndex, endIndex).forEach((data) => {
       const rowindex = data.rowindex;
       renderSet.add(rowindex);
@@ -130,7 +128,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
       const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);
       if (!$after) {
-        const nextItem = (Array.from($tbody.childNodes) as HTMLElement[]).find(
+        const nextItem = (Array.from(findAll$('.hui-grid-row', $tbody)) as HTMLElement[]).find(
           ($el) => rowindex < Number($el.ariaRowIndex)
         );
         $tbody.insertBefore($tr, nextItem ?? null);
