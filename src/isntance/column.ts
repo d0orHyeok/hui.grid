@@ -59,11 +59,22 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
 }
 
 function createColumnHeaderInfo(column: OptColumn, data: ColumnHeaderInfoData): ColumnHeaderInfo {
-  const { allowResizing, caption, className, dataField, visible = true, width, headerCellTemplate, minWidth } = column;
+  const {
+    allowResizing,
+    allowSorting,
+    caption,
+    className,
+    dataField,
+    visible = true,
+    width,
+    headerCellTemplate,
+    minWidth,
+  } = column;
 
   const columnInfo = {
     ...data,
     allowResizing,
+    allowSorting,
     caption: caption ?? dataField ?? '',
     className,
     dataField,

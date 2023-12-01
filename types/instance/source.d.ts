@@ -32,6 +32,7 @@ export type RenderStoreData = SourceData & {
 export interface Source {
   keyExpr: string;
   groupDataMap: DataObject<StoreDataItem[]>;
+  sorter: Sorter;
   readonly count: number;
   readonly mutation: Observable<SourceMutation>;
   readonly offsets: Observable<number[]>;
@@ -53,6 +54,16 @@ export type SourceChange<T extends DataObject = DataObject> =
 
 export type SourceChangeType = SourceChange['type'];
 
-export interface SourceMutation {
-  [key: string]: SourceChange;
-}
+export type SourceMutation = Record<string, SourceChange>;
+
+export type SortItem = { field: string; sort: 'asc' | 'desc' };
+
+export type Sorter = {
+  insert: (item: SortItem) => void;
+  remove: (field: string) => void;
+  update: (field: string, sort: 'asc' | 'desc') => void;
+  items: () => SortItem[];
+  clear: () => void;
+  get: (field: string) => SortItem | undefined;
+  _sorts: Observable<SortItem[]>;
+};

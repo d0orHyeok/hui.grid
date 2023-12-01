@@ -5,8 +5,6 @@ import { StoreDataItem } from './instance/source';
 export interface OptGrid extends Partial<OptCommonColumn> {
   /** Specifies the shortcut key that sets focus on the grid component. */
   accessKey?: string;
-  // allowColumnResizing?: boolean;
-  // columnMinWidth?: number;
   /** An array of grid columns. */
   columns: OptColumn[];
   // columnWidth?: number | string;
@@ -36,6 +34,8 @@ export interface OptGrid extends Partial<OptCommonColumn> {
   selectedRowKey?: string[];
   /** Specifies the selection mode. */
   selection?: 'single' | 'multiple';
+  /** Specifies the sorting mode. */
+  sorting?: 'none' | 'single' | 'multiple' | boolean;
   /** Specifies the number of the element when the Tab key is used for navigating. */
   tabIndex?: number;
   /** Specifies the grid component's width. */
@@ -77,6 +77,8 @@ export interface OptColumn {
   allowGrouping?: boolean;
   /** Specifies whether a user can resize the column at runtime. Applies only if allowColumnResizing is true. Default: true */
   allowResizing?: boolean;
+  /** Specifies whether data can be sorted by this column. Default: true */
+  allowSorting?: boolean;
   /** In a boolean column, replaces all boolean items with a specified text. */
   booleanText?: { trueText?: string; falseText?: string };
   /** Calculates custom cell values */

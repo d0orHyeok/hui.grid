@@ -3,7 +3,7 @@ import { Observable } from '@t/observable';
 import { OptGrid } from '@t/options';
 
 export type PublicPart<T> = { [K in keyof T]: T[K] };
-export type DataObject<T = any> = { [key: string]: T };
+export type DataObject<T = any> = Record<string, T>;
 export type OptionOpt = Omit<OptGrid, 'columns'>;
 
 declare namespace hui {

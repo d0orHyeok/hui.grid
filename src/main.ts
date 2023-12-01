@@ -9,7 +9,7 @@ const grid = new HuiGrid('#app', {
     { dataField: 'group', visible: false, groupIndex: 0 },
     { dataField: 'key', minWidth: 300 },
     { dataField: 'name', width: '120px', groupIndex: 1 },
-    { caption: 'group', columns: [{ dataField: 'scroe' }, { dataField: 'progress' }] },
+    { caption: 'group', columns: [{ dataField: 'score' }, { dataField: 'progress' }] },
   ],
 });
 
@@ -20,7 +20,7 @@ const datas = Array.from({ length: 300 }, (_, i) => {
   return {
     key: `rowkey${i}`,
     name: names[Math.floor(Math.random() * 100) % nameSize],
-    scroe: (i * 581236) % 900,
+    score: (i * 581236) % 900,
     progress: Math.floor(Math.random() * 100 * 100) / 100,
     group: `group ${(i % 10) + 1}`,
   };

@@ -48,6 +48,7 @@ export interface ColumnInfoData {
 
 export interface ColumnHeaderInfo extends ColumnHeaderInfoData {
   allowResizing?: boolean;
+  allowSorting?: boolean;
   caption: string;
   className?: string;
   columns?: ColumnHeaderInfo[];

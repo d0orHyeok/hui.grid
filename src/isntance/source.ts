@@ -10,6 +10,8 @@ import {
   StoreGroupItem,
   StoreDataItem,
   RenderStoreData,
+  SortItem,
+  Sorter,
 } from '@t/instance/source';
 import { isEqual } from 'lodash-es';
 
@@ -87,11 +89,95 @@ function createGroupItems(datas: DataObject[], groupColumnInfos: GroupColumnInfo
   return { datas: results, groupDataMap };
 }
 
+function createSorter(opts: SourceParams['opts']): Sorter {
+  const defaultSorting = 'single';
+  const sorts = observable<SortItem[]>([]);
+  const sorting = observable(() => opts().sorting);
+
+  let prev = sorting() ?? defaultSorting;
+  sorting.subscribe((state) => {
+    const cur = state ?? defaultSorting;
+    if (cur === prev) return;
+    prev = cur;
+    switch (cur) {
+      case 'none':
+      case false:
+        sorts([]);
+        break;
+      case 'single':
+      case true:
+        sorts(sorts().slice(-1));
+        break;
+    }
+  });
+
+  return {
+    _sorts: sorts,
+    insert: (item: SortItem) => {
+      switch (sorting() ?? defaultSorting) {
+        case 'none':
+        case false:
+          break;
+        case 'single':
+        case true:
+          sorts([item]);
+          break;
+        case 'multiple':
+          sorts([...sorts(), item]);
+      }
+    },
+    remove: (field: string) => sorts(sorts().filter((item) => item.field !== field)),
+    update: (field, sort) => sorts(sorts().map((item) => (item.field === field ? { field, sort } : item))),
+    items: () => sorts(),
+    clear: () => sorts([]),
+    get: (field: string) => sorts().find((item) => item.field === field),
+  };
+}
+
 export function create({ opts, column }: SourceParams): Source {
+  const origin = observable<DataObject[]>([]);
   const param = observable(() => ({ keyExpr: opts().keyExpr, datas: opts().datas }));
-  const store = observable<SourceData[]>([]);
   const mutation = observable<SourceMutation>({});
   const offsets = observable<number[]>([0, 0]);
+  const sorter = createSorter(opts);
+
+  const base: Source = { groupDataMap: {}, sorter } as Source;
+
+  const store = observable<SourceData[]>(() => {
+    const sortItems = sorter._sorts();
+    const sortItemSize = sortItems.length;
+    const datas = origin();
+    const { groupColumnInfos } = column;
+    const { keyExpr } = param();
+
+    const sortedDatas = (() => {
+      if (sortItemSize) {
+        function comparePriority(a: DataObject, b: DataObject) {
+          const compare = sortItems.reduce((acc, { field, sort }, index) => {
+            const multi = Math.pow(10, sortItemSize - index);
+            const v1 = a[field];
+            const v2 = b[field];
+            const values = sort === 'asc' ? [v1, v2] : [v2, v1];
+            return acc + multi * String(values[0]).localeCompare(String(values[1]), undefined, { numeric: true });
+          }, 0);
+          return compare;
+        }
+        return [...datas].sort(comparePriority);
+      } else return datas;
+    })();
+
+    mutation({});
+    if (groupColumnInfos.length) {
+      // if group
+      const results = createGroupItems(sortedDatas, column.groupColumnInfos, keyExpr);
+      base.groupDataMap = results.groupDataMap;
+      return results.datas;
+    } else {
+      // if not group
+      const sourceDatas = sortedDatas.map((data) => createDataItem(data, keyExpr));
+      return sourceDatas;
+    }
+  });
 
   const renderStore = observable(() => {
     const sourceDatas = store();
@@ -106,32 +192,6 @@ export function create({ opts, column }: SourceParams): Source {
     return results;
   });
 
-  function update(key: string, data: Partial<DataObject>) {
-    const exist = mutation()[key] ?? {};
-    const prevUpdate = exist.type === 'update' ? exist.data : {};
-    const nowUpdate = { ...prevUpdate, ...data };
-    mutation({ ...mutation(), [key]: { type: 'update', key, data: nowUpdate } });
-  }
-
-  const base: Source = { groupDataMap: {} } as Source;
-
-  function setData(datas: DataObject[]) {
-    const { groupColumnInfos } = column;
-    const { keyExpr } = param();
-
-    mutation({});
-    if (groupColumnInfos.length) {
-      // if group
-      const results = createGroupItems(datas, column.groupColumnInfos, keyExpr);
-      base.groupDataMap = results.groupDataMap;
-      store(results.datas);
-    } else {
-      // if not group
-      const sourceDatas = datas.map((data) => createDataItem(data, keyExpr));
-      store(sourceDatas);
-    }
-  }
-
   const extend = {
     keyExpr: param().keyExpr ?? defaultKeyField,
     get count() {
@@ -142,7 +202,7 @@ export function create({ opts, column }: SourceParams): Source {
     renderStore,
     store,
     changes: () => Object.values(mutation()),
-    clear: () => setData([]),
+    clear: () => opts({ ...opts(), datas: [] }),
     insert(...datas: DataObject[]) {
       datas.forEach((data) => {
         let key = data[this.keyExpr];
@@ -152,14 +212,20 @@ export function create({ opts, column }: SourceParams): Source {
     },
     items: () => store(),
     remove: (key: string) => mutation({ ...mutation(), [key]: { type: 'remove', key } }),
-    setData,
-    update,
+    setData: (datas: DataObject[]) => origin(datas),
+    update: (key: string, data: Partial<DataObject>) => {
+      const exist = mutation()[key] ?? {};
+      const prevUpdate = exist.type === 'update' ? exist.data : {};
+      const nowUpdate = { ...prevUpdate, ...data };
+      mutation({ ...mutation(), [key]: { type: 'update', key, data: nowUpdate } });
+    },
   } as Source;
 
   const source = Object.assign(base, extend);
 
-  param.subscribe((cur, prev) => {
-    if (isEqual(cur, prev)) return;
+  let prevParam: any = param();
+  param.subscribe((cur) => {
+    if (isEqual(cur, prevParam)) return;
     const { keyExpr, datas } = cur;
     source.keyExpr = keyExpr ?? defaultKeyField;
     source.setData(datas ?? []);

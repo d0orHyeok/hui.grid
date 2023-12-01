@@ -26,7 +26,11 @@ export function create({ demension, source, viewport }: RowCoordsParam): RowCoor
     source.offsets([startNode, startNode + visibleNodeCount]);
 
     const thumbRatio = viewportHeight / scrollHeight;
-    const thumbHeight = isNaN(thumbRatio) ? 0 : Math.round(viewportHeight * thumbRatio * 100) / 100;
+    const thumbHeight = isNaN(thumbRatio)
+      ? 0
+      : thumbRatio === Infinity
+      ? viewportHeight
+      : Math.round(viewportHeight * thumbRatio * 100) / 100;
     const scrollThumbHeight = Math.max(thumbHeight, MIN_SCROLL_THUMB);
     const scrollThumbDiff = scrollThumbHeight - thumbHeight;
     const translateRatio = scrollTop() / scrollHeight;

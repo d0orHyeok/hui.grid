@@ -5,8 +5,10 @@ export default class ColumnView extends View<HTMLTableCellElement> {
   template(): string {
     this.role('columnheader');
     return /*html*/ `
-      <div class="hui-grid-column-text"></div>
-      <div class="hui-grid-column-indicators"></div>
+      <div class="hui-grid-column-wrapper">
+        <div class="hui-grid-column-text"></div>
+        <div class="hui-grid-column-indicators"></div>
+      </div>
       <div class="hui-grid-column-resizer"></div>
     `;
   }
@@ -18,7 +20,7 @@ export default class ColumnView extends View<HTMLTableCellElement> {
     else $el.innerHTML = `<span class="hui-icon-sort-${option === 'asc' ? 'up' : 'down'}"></span>`;
   }
 
-  setTemplate(template: any) {
+  setTemplate(...template: any[]) {
     const $el = find$('.hui-grid-column-text', this.$target) as HTMLElement;
     $el.replaceChildren(...template);
   }

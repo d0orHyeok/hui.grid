@@ -15,6 +15,7 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
   init() {
     this.renderColumn();
     this.makeResizable();
+    this.makeSortable();
   }
 
   renderColumn() {
@@ -80,5 +81,29 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     on($resizer, 'mousedown', onMousedown);
     on($html, 'mouseup', onMouseUp);
     on($html, 'mousemove', onMouseMove);
+  }
+
+  makeSortable() {
+    const { instance, columnHeaderInfo } = this.state;
+    const { sorter } = instance.source;
+    const { dataField, allowSorting } = columnHeaderInfo;
+
+    if (!dataField || allowSorting === false) return;
+
+    const { $target } = this.view;
+    const $resize = find$(cn('.', 'resizer'), $target) as HTMLElement;
+
+    this.view.on('mousedown', (event) => {
+      if ($resize && $resize.contains(event.target as Node)) return;
+      const item = sorter.get(dataField);
+      if (!item) sorter.insert({ field: dataField, sort: 'asc' });
+      else if (item.sort === 'asc') sorter.update(dataField, 'desc');
+      else sorter.remove(dataField);
+    });
+
+    sorter._sorts.subscribe((items) => {
+      const { sort } = items.find((item) => item.field === dataField) ?? {};
+      this.view.setSortIndicator(sort ?? 'none');
+    });
   }
 }

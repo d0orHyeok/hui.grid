@@ -353,7 +353,6 @@
 /* Cell & Column */
 .hui-grid-table td {
   position: relative;
-  padding: 3px 6px;
   font-size: 12px;
   overflow: hidden;
 }
@@ -367,22 +366,37 @@
   text-transform: capitalize;
 }
 
-.hui-grid-table td[role='columnheader'] .hui-grid-column-text {
-  display: block;
+.hui-grid-column-wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  padding: 3px 6px;
+}
+
+.hui-grid-column-text {
+  margin: auto;
+  flex-grow: 1;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-.hui-grid-table td[role='columnheader'] .hui-grid-column-indicators {
+.hui-grid-column-caption {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hui-grid-column-indicators {
   float: right;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: 4px;
-  cursor: pointer;
 }
 
-.hui-grid-table td[role='columnheader'] .hui-grid-column-indicators::after {
+.hui-grid-column-indicators::after {
   content: '';
   clear: both;
 }
@@ -391,6 +405,7 @@
 
 .hui-grid-body .hui-grid-table td {
   text-overflow: ellipsis;
+  padding: 3px 6px;
 }
 
 /* Group cell */
@@ -398,7 +413,7 @@
   color: #ad1f24;
 }
 
-.hui-grid .hui-grid-group-toggle {
+.hui-grid .hui-grid-body .hui-grid-group-toggle {
   padding: 0;
   text-align: center;
   cursor: pointer;

@@ -7,7 +7,7 @@ import { Observable } from '@t/observable';
 import { cn } from '@/healpers/className';
 import { create$, find$, findAll$ } from '@/utils/dom';
 import { RowElement, RowState, RowView } from '../Row';
-import { RenderStoreData, SourceData } from '@t/instance/source';
+import { RenderStoreData } from '@t/instance/source';
 
 export interface BodyState extends DefaultState {
   nodata: Observable<string | Element | undefined>;
@@ -44,15 +44,11 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const { source } = this.state.instance;
     const { renderStore, offsets } = source;
     let prevOffset = [0, 0];
-    let prevItems: SourceData[] = [];
 
     renderStore.subscribe((items) => {
-      if (!isEqual(prevItems, items)) {
-        prevItems = items;
-        const indexes = offsets();
-        this._syncVirtualSpace(items.length, indexes);
-        this._renderDatas(items, indexes);
-      }
+      const indexes = offsets();
+      this._syncVirtualSpace(items.length, indexes);
+      this._renderDatas(items, indexes);
     });
 
     offsets.subscribe((cur) => {
@@ -121,8 +117,11 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     datas.slice(startIndex, endIndex).forEach((data) => {
       const rowindex = data.rowindex;
       renderSet.add(rowindex);
+      const item = rowMap.get(rowindex);
       const $exist = find$(`[aria-rowindex="${rowindex}"`, $tbody);
-      if ($exist) return;
+      if ($exist && item?.component?.type === data.type) return item.component.syncData(data);
+      else if ($exist) $exist.remove();
+
       const $tr = create$('tr', { ariaAttr: { rowindex }, style: { height: '32px' } });
       const state = { type: data.type, data, instance } as RowState;
 

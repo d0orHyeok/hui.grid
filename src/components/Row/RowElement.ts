@@ -7,6 +7,7 @@ import { CellElement, CellView } from '@/components/Cell';
 import { SourceData, StoreDataItem, StoreGroupItem } from '@t/instance/source';
 import { ExpanderElement, ExpanderView } from '@/components/Expander';
 import { cn } from '@/healpers/className';
+import { isEqual } from 'lodash-es';
 
 export type RowType = 'header' | 'virtual' | 'group' | 'data';
 
@@ -35,6 +36,10 @@ export type VirtualRowState = {
 export default class RowElement extends Component<RowView, RowState> {
   Cells?: CellElement[];
   Columns?: ColumnElement[];
+
+  get type() {
+    return this.state.type;
+  }
 
   init(): void {
     this.view.setRowType(this.state.type);
@@ -135,5 +140,17 @@ export default class RowElement extends Component<RowView, RowState> {
     $target.appendChild($td);
     const groupCell = new CellElement(new CellView($td), { type: 'group', groupColumnInfo, data, instance });
     this.Cells = [groupCell];
+  }
+
+  syncData(data: SourceData) {
+    const { type } = this.state;
+    //@ts-ignore
+    this.state.data = data;
+    type === 'data' ? this.renderDataCells() : this.renderGroupCells();
+  }
+
+  compareData(data: SourceData) {
+    //@ts-ignore
+    return isEqual(this.state.data, data);
   }
 }
