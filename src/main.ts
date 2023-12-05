@@ -9,7 +9,7 @@ const grid = new HuiGrid('#app', {
     { dataField: 'group', visible: false, groupIndex: 0 },
     { dataField: 'key', minWidth: 300 },
     { dataField: 'name', width: '120px', groupIndex: 1 },
-    { caption: 'group', columns: [{ dataField: 'score' }, { dataField: 'progress' }] },
+    { caption: 'group', columns: [{ dataField: 'score' }, { dataField: 'progress', dataType: 'progress' }] },
   ],
 });
 

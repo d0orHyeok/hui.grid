@@ -21,7 +21,6 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
     align,
     allowEditing,
     allowFiltering,
-    allowGrouping,
     booleanText,
     calculateCellValue,
     cellTemplate,
@@ -41,7 +40,6 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
     align: align ?? (!isUndefined(dataType) ? alignMap[dataType] : undefined),
     allowEditing,
     allowFiltering,
-    allowGrouping,
     booleanText,
     calculateCellValue,
     calculateDisplayValue,
@@ -110,7 +108,7 @@ function classifiyOptColumn(optColumns: OptColumn[]) {
       if (isString(dataField)) {
         if (duplicatedSet.has(dataField)) throw new Error(`DataField "${dataField}" is duplicated`);
         duplicatedSet.add(dataField);
-        if (isNumber(groupIndex)) optGroupColumns.push(optCol); // if opt column has 'groupIndex' push column
+        if (isNumber(groupIndex) && optCol.allowGrouping !== false) optGroupColumns.push(optCol); // if opt column has 'groupIndex' push column
       }
       // Make Column Index
       const colindex = (colindexMap.get(depth) ?? 0) + 1;

@@ -2,7 +2,7 @@ import { Component } from '@/components/core';
 import CellView from './CellView';
 import { DefaultState } from '@t/components';
 import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
-import { isBoolean, isFunction, isObjKey, isString, isUndefined } from '@/utils/common';
+import { clamp, isBoolean, isFunction, isObjKey, isString, isUndefined } from '@/utils/common';
 import { alignMap } from '@/healpers/dataMap';
 import { StoreDataItem, StoreGroupItem } from '@t/instance/source';
 import { create$ } from '@/utils/dom';
@@ -39,7 +39,6 @@ export default class CellElement extends Component<CellView, CellState> {
       align,
       allowEditing,
       allowFiltering,
-      allowGrouping,
       booleanText,
       calculateCellValue,
       calculateDisplayValue,
@@ -56,12 +55,10 @@ export default class CellElement extends Component<CellView, CellState> {
     const value = data.data[dataField];
     const displayValue = isFunction(calculateDisplayValue) ? calculateDisplayValue(data) : undefined;
     const cellValue = displayValue ?? (isFunction(calculateCellValue) ? calculateCellValue(data) : value);
-    const cellText =
-      dataType === 'boolean' || (isUndefined(dataType) && isBoolean(cellValue))
-        ? cellValue
-          ? trueText
-          : falseText
-        : cellValue ?? '';
+    let templateValue = cellValue ?? '';
+    if (dataType === 'boolean' || (isUndefined(dataType) && isBoolean(cellValue))) {
+      templateValue = cellValue ? trueText : falseText;
+    }
 
     const template = isFunction(cellTemplate)
       ? cellTemplate({
@@ -72,9 +69,13 @@ export default class CellElement extends Component<CellView, CellState> {
           displayValue,
           value,
         })
-      : cellText;
+      : templateValue;
 
     this.view.setTemplate(template);
+    if (dataType === 'progress') {
+      this.view.$target.classList.add('hui-grid-progress-cell');
+      this.view.$target.style.setProperty('--progress-width', `${clamp(templateValue, 0, 100)}%`);
+    }
 
     const dType = dataType ?? typeof value;
     const textAlign = isUndefined(align) ? (isObjKey(dType, alignMap) ? alignMap[dType] : undefined) : align;
