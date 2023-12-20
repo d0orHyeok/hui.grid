@@ -33,7 +33,7 @@ export default class ExpanderElement extends Component<ExpanderView, ExpanderSta
     if (!$row) return;
 
     const { data, instance } = this.state;
-    const { demension, source } = instance;
+    const { demension, source, viewport } = instance;
     const currentKey = JSON.stringify(data.keys);
     const renderDatas = source.renderStore();
 
@@ -53,9 +53,10 @@ export default class ExpanderElement extends Component<ExpanderView, ExpanderSta
 
     const count = (find ? find.rowindex - 1 : (renderDatas.at(-1)?.rowindex as number)) - startRowIndex;
     const { rowHeight } = demension();
+    const viewportHeight = viewport().height;
     const $tempRow = create$('tr', { classList: ['hui-grid-animation-row'], ariaAttr: { expanded: isExpand } });
     $tempRow.addEventListener('animationend', listener);
-    $tempRow.style.setProperty('--row-animation-height', `${rowHeight * count}px`);
+    $tempRow.style.setProperty('--row-animation-height', `${Math.min(rowHeight * count, viewportHeight)}px`);
     $row.insertAdjacentElement('afterend', $tempRow);
   }
 }

@@ -316,6 +316,7 @@
 
 /* Row */
 .hui-grid-animation-row {
+  --row-animation-height: 0;
   height: var(--row-animation-height);
 }
 
