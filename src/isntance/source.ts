@@ -183,10 +183,13 @@ export function create({ opts, column }: SourceParams): Source {
     const sourceDatas = store();
     const results: RenderStoreData[] = [];
     let rowindex = 0;
+    let dataindex = 0;
     const pushData = (item: SourceData, skip = false) => {
       rowindex += 1;
-      if (!skip) results.push(Object.assign(item, { rowindex }));
-      if (item.type === 'group') item.items.forEach((child) => pushData(child, !item.expanded || skip));
+      const isGroup = item.type === 'group';
+      if (!skip) results.push(Object.assign(item, { rowindex, dataindex: isGroup ? undefined : dataindex }));
+      if (isGroup) item.items.forEach((child) => pushData(child, !item.expanded || skip));
+      else dataindex += 1;
     };
     sourceDatas.forEach((data) => pushData(data));
     return results;

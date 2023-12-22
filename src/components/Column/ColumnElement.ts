@@ -88,7 +88,9 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     const { sorter } = instance.source;
     const { dataField, allowSorting } = columnHeaderInfo;
 
-    if (!dataField || allowSorting === false) return;
+    if (!dataField) return;
+    this.view.$target.dataset.sortable = `${allowSorting ?? true}`;
+    if (allowSorting === false) return;
 
     const { $target } = this.view;
     const $resize = find$(cn('.', 'resizer'), $target) as HTMLElement;

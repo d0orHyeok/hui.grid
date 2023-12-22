@@ -95,6 +95,10 @@ export default class RowElement extends Component<RowView, RowState> {
     const { instance, type } = this.state;
     const { $target } = this.view;
     if (type !== 'data') return;
+
+    const dataindex = Number($target.dataset.dataindex || -1);
+    if (dataindex > -1 && dataindex % 2 === 1) $target.classList.add('row-alt');
+
     const { data } = this.state;
     const { column } = instance;
     const { visibleColumnInfos, groupColumnInfos } = column;

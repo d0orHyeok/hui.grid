@@ -53,7 +53,7 @@ export interface OptCommonColumn {
   /**
    * Each column's width
    * @description [number] The column's width in pixels.
-   * @description [string] A CSS-accepted column width measurement (for example, "55px", "80%" and "auto") except relative units such as em, ch, vh, etc.
+   * @description [string] A CSS-accepted column width measurement (e.g. "55px", "80%" and "auto") except relative units such as em, ch, vh, etc.
    */
   columnWidth?: number | string;
   /**

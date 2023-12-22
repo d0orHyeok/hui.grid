@@ -27,6 +27,7 @@ export type StoreGroupItem = {
 
 export type RenderStoreData = SourceData & {
   rowindex: number;
+  dataindex?: number;
 };
 
 export interface Source {

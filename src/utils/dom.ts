@@ -108,10 +108,10 @@ interface CreateNodeOptions {
   classList: string[];
   role: AriaRole;
   style: CSSProperties;
-  dataset: { [key: string]: string | boolean | number };
+  dataset: { [key: string]: string | boolean | number | undefined };
   ariaAttr: AriaAttributes;
   type: string;
-  attr: { [key: string]: string | boolean | number };
+  attr: { [key: string]: string | boolean | number | undefined };
 }
 
 export function create$<K extends keyof HTMLElementTagNameMap>(tagName: K, options: Partial<CreateNodeOptions> = {}) {
@@ -124,14 +124,14 @@ export function create$<K extends keyof HTMLElementTagNameMap>(tagName: K, optio
   // @ts-ignore
   if (type && $el['type']) $el['type'] = type;
   // @ts-ignore
-  if (style) entries(style, (key, value) => ($el.style[key] = value));
-  if (dataset) entries(dataset, (key, value) => ($el.dataset[key] = `${value}`));
+  if (style) entries(style, (key, value) => value !== undefined && ($el.style[key] = value));
+  if (dataset) entries(dataset, (key, value) => value !== undefined && ($el.dataset[key] = `${value}`));
   if (ariaAttr)
     // @ts-ignore
-    entries(ariaAttr, (key, value) => $el.setAttribute(`aria-${key}`, value));
+    entries(ariaAttr, (key, value) => value !== undefined && $el.setAttribute(`aria-${key}`, value));
   if (attr)
     // @ts-ignore
-    entries(attr, (key, value) => $el.setAttribute(key, value));
+    entries(attr, (key, value) => value !== undefined && $el.setAttribute(key, value));
   return $el;
 }
 

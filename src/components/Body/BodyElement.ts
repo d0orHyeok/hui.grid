@@ -91,7 +91,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const virtualTopHeight = Math.max(startIndex * rowHeight, 0);
     const virtualBottomHeight = Math.max((dataSize - endIndex) * rowHeight, 0);
 
-    const createElem = ($target: HTMLElement, rowindex: number, height: number) => {
+    const createVirtualSpaceElement = ($target: HTMLElement, rowindex: number, height: number) => {
       const $item = $target.firstElementChild;
       if (height === 0) return $item !== null && $item.remove();
       const $tr = create$('tr', { ariaAttr: { rowindex } });
@@ -99,8 +99,8 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       new RowElement(new RowView($tr), { instance: this.state.instance, height, type: 'virtual' });
     };
 
-    createElem($thead, 0, virtualTopHeight);
-    createElem($tfoot, dataSize + 1, virtualBottomHeight);
+    createVirtualSpaceElement($thead, 0, virtualTopHeight);
+    createVirtualSpaceElement($tfoot, dataSize + 1, virtualBottomHeight);
   }
 
   private _renderDatas(datas: RenderStoreData[], offsets: number[]) {
@@ -115,14 +115,14 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const renderSet = new Set<number>();
 
     datas.slice(startIndex, endIndex).forEach((data) => {
-      const rowindex = data.rowindex;
+      const { rowindex, dataindex } = data;
       renderSet.add(rowindex);
       const item = rowMap.get(rowindex);
       const $exist = find$(`[aria-rowindex="${rowindex}"`, $tbody);
       if ($exist && item?.component?.type === data.type) return item.component.syncData(data);
       else if ($exist) $exist.remove();
 
-      const $tr = create$('tr', { ariaAttr: { rowindex }, style: { height: '32px' } });
+      const $tr = create$('tr', { ariaAttr: { rowindex }, dataset: { dataindex }, style: { height: '32px' } });
       const state = { type: data.type, data, instance } as RowState;
 
       const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);
