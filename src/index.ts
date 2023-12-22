@@ -1,10 +1,9 @@
 import IHuiGrid, { DataObject, OptionOpt } from '@t/index';
 import { OptGrid } from '@t/options';
-import { isString, isUndefined } from '@/utils/common';
+import { isString } from '@/utils/common';
 import { create$, find$, findAll$ } from './utils/dom';
 import observable from './observable';
 import { Observable } from '@t/observable';
-import { Instance } from '@t/instance';
 import createInstance from '@/isntance';
 import { cn } from '@/healpers/className';
 import { HeaderElement, HeaderView } from '@/components/Header';
@@ -20,7 +19,6 @@ interface ComponentMap {
 class HuiGrid implements IHuiGrid {
   private _element: HTMLElement;
   private _options: Observable<OptGrid>;
-  private _instance: Instance;
   private compoentMap: ComponentMap;
 
   /**
@@ -50,7 +48,6 @@ class HuiGrid implements IHuiGrid {
     const instance = createInstance(opts);
     const { root } = instance;
     $element.classList.add(root);
-    this._instance = instance;
 
     // Render Grid
     const $header = create$('div');
@@ -90,12 +87,20 @@ class HuiGrid implements IHuiGrid {
     opts({ ...opts(), datas });
   }
 
-  public option<K extends keyof OptionOpt>(option: K | Partial<OptionOpt>, value?: OptionOpt[K]) {
+  public option(): OptGrid;
+  public option<K extends keyof OptionOpt>(options: Partial<OptionOpt>): void;
+  public option<K extends keyof OptionOpt>(optionName: K): OptionOpt[K];
+  public option<K extends keyof OptionOpt>(optionName: K, value: OptionOpt[K]): void;
+  public option<
+    K extends keyof OptionOpt | Partial<OptionOpt>,
+    V extends K extends keyof OptionOpt ? OptionOpt[K] : void,
+  >(option?: K, value?: V) {
     const opts = this._options;
+    if (arguments.length === 0) return opts();
     if (isString(option)) {
-      if (!isUndefined(value)) opts({ ...opts(), [option]: value });
-      else return opts()[option] as OptionOpt[K];
-    } else opts({ ...opts(), ...option });
+      if (arguments.length > 1) opts({ ...opts(), [option]: value });
+      else return opts()[option as keyof OptionOpt];
+    } else return opts({ ...opts(), ...option });
   }
 }
 

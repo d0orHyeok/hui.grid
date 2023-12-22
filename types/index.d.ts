@@ -17,9 +17,10 @@ declare namespace hui {
     private render(): () => void;
     public element: () => HTMLElement;
     public setData: (datas: DataObject[]) => void;
-    public option: <K extends keyof OptionOpt>(optionName: K) => OptionOpt[K];
-    public option: <K extends keyof OptionOpt>(optionName: K, value: OptionOpt[K]) => void;
-    public option: (options: Partial<OptionOpt>) => void;
+    public option(): OptGrid;
+    public option<K extends keyof OptionOpt>(options: Partial<OptionOpt>): void;
+    public option<K extends keyof OptionOpt>(optionName: K): OptionOpt[K];
+    public option<K extends keyof OptionOpt>(optionName: K, value: OptionOpt[K]): void;
   }
 }
 
