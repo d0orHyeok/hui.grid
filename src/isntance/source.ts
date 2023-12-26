@@ -166,7 +166,6 @@ export function create({ opts, column }: SourceParams): Source {
       } else return datas;
     })();
 
-    mutation({});
     if (groupColumnInfos.length) {
       // if group
       const results = createGroupItems(sortedDatas, column.groupColumnInfos, keyExpr);
@@ -175,6 +174,7 @@ export function create({ opts, column }: SourceParams): Source {
     } else {
       // if not group
       const sourceDatas = sortedDatas.map((data) => createDataItem(data, keyExpr));
+      base.groupDataMap = {};
       return sourceDatas;
     }
   });
@@ -183,13 +183,14 @@ export function create({ opts, column }: SourceParams): Source {
     const sourceDatas = store();
     const results: RenderStoreData[] = [];
     let rowindex = 0;
-    let dataindex = 0;
+    let idx = 0;
     const pushData = (item: SourceData, skip = false) => {
       rowindex += 1;
       const isGroup = item.type === 'group';
-      if (!skip) results.push(Object.assign(item, { rowindex, dataindex: isGroup ? undefined : dataindex }));
-      if (isGroup) item.items.forEach((child) => pushData(child, !item.expanded || skip));
-      else dataindex += 1;
+      const data: RenderStoreData = Object.assign(item, { rowindex });
+      if (!skip) results.push(data);
+      if (isGroup) item.items.forEach((child) => pushData(child, !item.expanded || skip)), (idx = 0);
+      else (data.dataindex = idx), idx++;
     };
     sourceDatas.forEach((data) => pushData(data));
     return results;
@@ -232,6 +233,7 @@ export function create({ opts, column }: SourceParams): Source {
     const { keyExpr, datas } = cur;
     source.keyExpr = keyExpr ?? defaultKeyField;
     source.setData(datas ?? []);
+    mutation({});
   }, true);
 
   return source;

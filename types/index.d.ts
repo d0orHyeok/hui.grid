@@ -10,10 +10,6 @@ declare namespace hui {
   class Grid {
     constructor(element: Element | string, options: OptGrid);
 
-    private _element: HTMLElement;
-    private _options: Observable<OptGrid>;
-    private _instance: Instance;
-
     private render(): () => void;
     public element: () => HTMLElement;
     public setData: (datas: DataObject[]) => void;

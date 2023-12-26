@@ -115,14 +115,14 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     const renderSet = new Set<number>();
 
     datas.slice(startIndex, endIndex).forEach((data) => {
-      const { rowindex, dataindex } = data;
+      const { rowindex } = data;
       renderSet.add(rowindex);
       const item = rowMap.get(rowindex);
       const $exist = find$(`[aria-rowindex="${rowindex}"`, $tbody);
       if ($exist && item?.component?.type === data.type) return item.component.syncData(data);
       else if ($exist) $exist.remove();
 
-      const $tr = create$('tr', { ariaAttr: { rowindex }, dataset: { dataindex }, style: { height: '32px' } });
+      const $tr = create$('tr', { ariaAttr: { rowindex }, style: { height: '32px' } });
       const state = { type: data.type, data, instance } as RowState;
 
       const $after = find$(`[aria-rowindex="${rowindex + 1}"`, $tbody);

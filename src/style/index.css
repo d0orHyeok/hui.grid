@@ -13,7 +13,7 @@
 .hui-grid {
   --hui-grid-header-background: #f0f0f0;
   --hui-grid-header-hover-backgorund: #ebebeb;
-  --hui-grid-odd-row-background: #f8f8f8;
+  --hui-grid-even-row-background: #f6f6f6;
   --hui-grid-color: #000;
   --hui-grid-border-width: 1px;
   --hui-grid-border-style: solid;
@@ -348,7 +348,7 @@
 }
 
 .hui-grid-body .hui-grid-data-row.row-alt td {
-  background-color: var(--hui-grid-odd-row-background);
+  background-color: var(--hui-grid-even-row-background);
 }
 
 /* Cell & Column */
