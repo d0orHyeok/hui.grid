@@ -2,6 +2,7 @@ import observable from '@/observable';
 import { findIndexes, isString, isUndefined, mapProp, sum } from '@/utils/common';
 import { ColumnInfo, GroupColumnInfo } from '@t/instance/column';
 import { ColumnCoords, ColumnCoordsParam } from '@t/instance/columnCoords';
+import { EditOption } from '@t/options';
 import toPx from 'to-px';
 
 const MIN_SCROLL_THUMB = 20;
@@ -45,6 +46,7 @@ function calculateWidths(
   contentsWidth: number,
   columnInfos: ColumnInfo[],
   groupColumnInfos: GroupColumnInfo[],
+  editOption: EditOption,
   customWidths: Array<number | null> = []
 ) {
   const baseWidths: number[] = [];
@@ -60,6 +62,11 @@ function calculateWidths(
       else baseWidths.push(toPx(width) ?? 0);
     } else baseWidths.push(width ?? 0);
   });
+
+  // editor column
+  const { allowDeleting, allowUpdating } = editOption;
+  if (allowDeleting || allowUpdating) baseWidths.push(80), minWidths.push(24);
+
   const fixedOpts = mapProp(columnInfos, 'width').map((item) => item !== 'auto' && !isUndefined(item));
   const expandedWidths = applyMinWidth(baseWidths, minWidths);
   const filledWidths = fillBlankWidths(expandedWidths, contentsWidth);
@@ -72,7 +79,7 @@ function calculateWidths(
   return resultWiths;
 }
 
-export function create({ column, viewport }: ColumnCoordsParam): ColumnCoords {
+export function create({ column, edit, viewport }: ColumnCoordsParam): ColumnCoords {
   const { visibleColumnInfos, groupColumnInfos } = column;
 
   const scrollLeft = observable(0);
@@ -81,7 +88,7 @@ export function create({ column, viewport }: ColumnCoordsParam): ColumnCoords {
 
   const coords = observable(() => {
     const viewportWidth = viewport().width;
-    const widths = calculateWidths(viewportWidth, visibleColumnInfos, groupColumnInfos, customWidths());
+    const widths = calculateWidths(viewportWidth, visibleColumnInfos, groupColumnInfos, edit.options(), customWidths());
     const scrollWidth = sum(widths);
 
     const thumbRatio = viewportWidth / scrollWidth;

@@ -1,4 +1,4 @@
-import observable from '@/observable';
+import observable, { effect } from '@/observable';
 import { entries, generateId, isNull, isUndefined, values } from '@/utils/common';
 import { DataObject } from '@t/index';
 import { GroupColumnInfo } from '@t/instance/column';
@@ -13,7 +13,6 @@ import {
   SortItem,
   Sorter,
 } from '@t/instance/source';
-import { isEqual } from 'lodash-es';
 
 const defaultKeyField = 'key';
 
@@ -94,22 +93,22 @@ function createSorter(opts: SourceParams['opts']): Sorter {
   const sorts = observable<SortItem[]>([]);
   const sorting = observable(() => opts().sorting);
 
-  let prev = sorting() ?? defaultSorting;
-  sorting.subscribe((state) => {
-    const cur = state ?? defaultSorting;
-    if (cur === prev) return;
-    prev = cur;
-    switch (cur) {
-      case 'none':
-      case false:
-        sorts([]);
-        break;
-      case 'single':
-      case true:
-        sorts(sorts().slice(-1));
-        break;
-    }
-  });
+  effect(
+    (state) => {
+      switch (state ?? defaultSorting) {
+        case 'none':
+        case false:
+          sorts([]);
+          break;
+        case 'single':
+        case true:
+          sorts(sorts().slice(-1));
+          break;
+      }
+    },
+    [sorting],
+    sorting() ?? defaultSorting
+  );
 
   return {
     _sorts: sorts,
@@ -227,14 +226,15 @@ export function create({ opts, column }: SourceParams): Source {
 
   const source = Object.assign(base, extend);
 
-  let prevParam: any = param();
-  param.subscribe((cur) => {
-    if (isEqual(cur, prevParam)) return;
-    const { keyExpr, datas } = cur;
-    source.keyExpr = keyExpr ?? defaultKeyField;
-    source.setData(datas ?? []);
-    mutation({});
-  }, true);
+  effect(
+    (cur) => {
+      const { keyExpr, datas } = cur;
+      source.keyExpr = keyExpr ?? defaultKeyField;
+      source.setData(datas ?? []);
+      mutation({});
+    },
+    [param, true]
+  );
 
   return source;
 }

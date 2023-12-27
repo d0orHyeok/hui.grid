@@ -1,5 +1,4 @@
 import { isString } from '@/utils/common';
-import { isEqual } from 'lodash-es';
 import BodyView from './BodyView';
 import { Component } from '@/components/core';
 import { DefaultState } from '@t/components';
@@ -8,6 +7,7 @@ import { cn } from '@/healpers/className';
 import { create$, find$, findAll$ } from '@/utils/dom';
 import { RowElement, RowState, RowView } from '../Row';
 import { RenderStoreData } from '@t/instance/source';
+import { effect } from '@/observable';
 
 export interface BodyState extends DefaultState {
   nodata: Observable<string | Element | undefined>;
@@ -29,6 +29,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
   /**
    * Sync option nodata & body nodata
+   * @private
    */
   private _syncNodata() {
     const { nodata } = this.state;
@@ -40,10 +41,12 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     }, true);
   }
 
+  /**
+   * @private
+   */
   private _syncOffsetsAndData() {
-    const { source } = this.state.instance;
+    const { source, edit } = this.state.instance;
     const { renderStore, offsets } = source;
-    let prevOffset = [0, 0];
 
     renderStore.subscribe((items) => {
       const indexes = offsets();
@@ -51,16 +54,34 @@ export default class BodyElement extends Component<BodyView, BodyState> {
       this._renderDatas(items, indexes);
     });
 
-    offsets.subscribe((cur) => {
-      if (isEqual(cur, prevOffset)) return;
-      const items = renderStore();
-      const dataSize = items.length;
-      prevOffset = cur;
-      this._syncVirtualSpace(dataSize, cur);
-      this._renderDatas(items, cur);
-    });
+    effect(
+      (currentOffsets) => {
+        const items = renderStore();
+        const dataSize = items.length;
+        this._syncVirtualSpace(dataSize, currentOffsets);
+        this._renderDatas(items, currentOffsets);
+      },
+      [offsets],
+      [0, 0]
+    );
+
+    effect(
+      () => {
+        if (!this.rowMap) return;
+        this.rowMap.forEach((item) => {
+          const component = item.component as any;
+          if (!component) return;
+          component.syncData(component.state.data);
+        });
+      },
+      [edit.options, true],
+      (s) => s.allowDeleting || s.allowUpdating
+    );
   }
 
+  /**
+   * @private
+   */
   private _syncViewport() {
     const {
       viewport,
@@ -80,6 +101,7 @@ export default class BodyElement extends Component<BodyView, BodyState> {
 
   /**
    * Sync virtual top & bottom space height
+   * @private
    * @param {number} dataSize
    * @param {[number, number]} offsets
    */
@@ -103,6 +125,12 @@ export default class BodyElement extends Component<BodyView, BodyState> {
     createVirtualSpaceElement($tfoot, dataSize + 1, virtualBottomHeight);
   }
 
+  /**
+   * @private
+   * @param {RenderStoreData[]} datas
+   * @param {number[]} offsets
+   * @param {boolean} [editable]
+   */
   private _renderDatas(datas: RenderStoreData[], offsets: number[]) {
     const { $tbody } = this.view;
     const dataSize = datas.length;

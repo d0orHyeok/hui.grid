@@ -25,11 +25,14 @@ export type CellTypedState =
 
 export default class CellElement extends Component<CellView, CellState> {
   init(): void {
-    this.renderDataCell();
-    this.renderGroupCell();
+    this._renderDataCell();
+    this._renderGroupCell();
   }
 
-  renderDataCell() {
+  /**
+   * @private
+   */
+  private _renderDataCell() {
     if (this.state.type !== 'data') return;
     const { $target } = this.view;
     this.view.role('gridcell');
@@ -37,8 +40,7 @@ export default class CellElement extends Component<CellView, CellState> {
 
     const {
       align,
-      allowEditing,
-      allowFiltering,
+      // allowEditing,
       booleanText,
       calculateCellValue,
       calculateDisplayValue,
@@ -82,7 +84,10 @@ export default class CellElement extends Component<CellView, CellState> {
     this.view.style({ textAlign, verticalAlign });
   }
 
-  renderGroupCell() {
+  /**
+   * @private
+   */
+  private _renderGroupCell() {
     if (this.state.type !== 'group') return;
     const { $target } = this.view;
     this.view.role('gridcell');

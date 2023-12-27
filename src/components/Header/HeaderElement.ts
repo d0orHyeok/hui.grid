@@ -3,7 +3,9 @@ import { cn } from '@/healpers/className';
 import { RowElement, RowView } from '@/components/Row';
 import { Component } from '@/components/core';
 import { DefaultState } from '@t/components';
-import { create$, find$ } from '@/utils/dom';
+import { create$, find$, findAll$ } from '@/utils/dom';
+import { effect } from '@/observable';
+import { EditOption } from '@t/options';
 
 export interface HeaderState extends DefaultState {}
 
@@ -11,10 +13,44 @@ export default class HeaderElement extends Component<HeaderView, HeaderState> {
   Rows?: RowElement[];
 
   init(): void {
-    this.renderHeaderRows();
+    this._renderHeaderRows();
+    this._syncEditColumn();
   }
 
-  renderHeaderRows() {
+  /**
+   * @private
+   */
+  private _syncEditColumn() {
+    const {
+      root,
+      edit: { options },
+      column,
+    } = this.state.instance;
+
+    const comapre = (s: EditOption) => s.allowDeleting || s.allowUpdating;
+    effect(
+      (state) => {
+        findAll$(`.${root} .${cn('editColumn')}`).forEach(($el) => $el.remove());
+        const $row = this.view.$target.querySelector('tr[aria-rowindex="1"]');
+        if (!$row || !comapre(state)) return;
+
+        const $el = create$('td', {
+          role: 'columnheader',
+          className: cn('editColumn'),
+          attr: { rowspan: column.headerRowCount },
+        });
+        $row.appendChild($el);
+      },
+      [options],
+      (s) => s.allowDeleting || s.allowUpdating,
+      false
+    );
+  }
+
+  /**
+   * @private
+   */
+  private _renderHeaderRows() {
     const $render = find$(cn('.', 'table', ' tbody'), this.view.$target);
     if (!$render) return;
     const instance = this.state.instance;

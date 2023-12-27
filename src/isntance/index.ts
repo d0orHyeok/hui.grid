@@ -7,8 +7,10 @@ import { create as createDemension } from '@/isntance/demension';
 import { create as createRowCoords } from '@/isntance/rowCoords';
 import { create as createViewport } from '@/isntance/viewport';
 import { create as createColumnCoords } from '@/isntance/columnCoords';
+import { create as createEdit } from '@/isntance/edit';
 import { generateId } from '@/utils/common';
 import { find$ } from '@/utils/dom';
+import { effect } from '@/observable';
 
 export default function createInstance(opts: Observable<OptGrid>): Instance {
   const root = `hui-${generateId()}`;
@@ -18,20 +20,24 @@ export default function createInstance(opts: Observable<OptGrid>): Instance {
   const column = createColumn(opts);
   // Create Demension
   const demension = createDemension({ opts });
+  //  Create Edit
+  const edit = createEdit(opts);
   // Create source
   const source = createSource({ opts, column });
   // Create RowCoords
   const rowCoords = createRowCoords({ demension, source, viewport });
   // Create ColumnCoords
-  const columnCoords = createColumnCoords({ column, viewport });
+  const columnCoords = createColumnCoords({ column, edit, viewport });
 
-  let prevAccessKey: string | undefined = undefined;
-  opts.subscribe(({ accessKey }) => {
-    if (accessKey === prevAccessKey) return;
-    prevAccessKey = accessKey;
-    const $el = find$('.' + root);
-    if ($el) !accessKey ? $el.removeAttribute('accesskey') : ($el.accessKey = accessKey);
-  });
+  effect(
+    ({ accessKey }) => {
+      const $el = find$('.' + root);
+      if ($el) !accessKey ? $el.removeAttribute('accesskey') : ($el.accessKey = accessKey);
+    },
+    [opts],
+    (s) => s.accessKey,
+    undefined
+  );
 
-  return { root, column, columnCoords, demension, rowCoords, source, viewport };
+  return { root, column, columnCoords, demension, edit, rowCoords, source, viewport };
 }

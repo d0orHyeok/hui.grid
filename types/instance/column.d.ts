@@ -26,7 +26,6 @@ export interface Column {
 export interface ColumnInfo extends ColumnInfoData {
   align?: HorizontalAlign;
   allowEditing?: Boolean;
-  allowFiltering?: boolean;
   booleanText?: { trueText?: string; falseText?: string };
   calculateCellValue?: (rowData: DataObject) => any;
   calculateDisplayValue?: CalculateDisplayValue;

@@ -20,7 +20,10 @@ const classMap = {
   expander: 'hui-grid-expander',
   groupExpander: 'hui-grid-group-toggle',
   resizer: 'hui-grid-column-resizer',
-  resizerWrapper: 'htui-grid-resizer-wrapper',
+  resizerWrapper: 'hui-grid-resizer-wrapper',
+  toolbar: 'hui-grid-toolbar',
+  editColumn: 'hui-grid-edit-column',
+  editCell: 'hui-grid-edit-cell',
 };
 
 export type ClassMapKey = keyof typeof classMap;

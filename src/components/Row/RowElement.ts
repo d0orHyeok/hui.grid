@@ -46,13 +46,16 @@ export default class RowElement extends Component<RowView, RowState> {
     // Set rowHeight
     if (this.state.type !== 'virtual') this.view.style({ height: this.state.instance.demension().rowHeight + 'px' });
     // Render columns
-    this.renderColumnHeaders();
-    this.renderDataCells();
-    this.renderVirtualCells();
-    this.renderGroupCells();
+    this._renderColumnHeaders();
+    this._renderDataCells();
+    this._renderVirtualCells();
+    this._renderGroupCells();
   }
 
-  renderVirtualCells() {
+  /**
+   * @private
+   */
+  private _renderVirtualCells() {
     if (this.state.type !== 'virtual') return;
     const { height, instance } = this.state;
     const { length } = instance.column.visibleColumnInfos;
@@ -60,7 +63,10 @@ export default class RowElement extends Component<RowView, RowState> {
     this.view.$target.innerHTML = tds;
   }
 
-  renderColumnHeaders() {
+  /**
+   * @private
+   */
+  private _renderColumnHeaders() {
     const { type } = this.state;
     const { $target } = this.view;
     if (type !== 'header') return;
@@ -73,6 +79,7 @@ export default class RowElement extends Component<RowView, RowState> {
     $target.innerHTML = '';
 
     if (rowindex === 1 && groupColumnInfos.length !== 0) {
+      // Add group space
       groupColumnInfos.forEach(({ groupIndex }) => {
         const $td = create$('td', {
           role: 'columnheader',
@@ -91,12 +98,16 @@ export default class RowElement extends Component<RowView, RowState> {
     });
   }
 
-  renderDataCells() {
+  /**
+   * @private
+   */
+  private _renderDataCells() {
     const { instance, type } = this.state;
     const { $target } = this.view;
     if (type !== 'data') return;
     const { data } = this.state;
 
+    // Set even row background
     // @ts-ignore
     const dataindex = Number(data.dataindex ?? -1);
     if (dataindex > -1 && dataindex % 2 === 1) $target.classList.add('row-alt');
@@ -106,6 +117,7 @@ export default class RowElement extends Component<RowView, RowState> {
 
     $target.innerHTML = '';
 
+    // Render group cells
     groupColumnInfos.forEach(() => {
       const $td = create$('td', { role: 'gridcell', className: cn('expander') });
       $target.appendChild($td);
@@ -117,9 +129,27 @@ export default class RowElement extends Component<RowView, RowState> {
       $target.appendChild($td);
       return new CellElement(new CellView($td), { type: 'data', columnInfo, instance, data });
     });
+
+    this._renderEditCell();
   }
 
-  renderGroupCells() {
+  /**
+   * @private
+   */
+  private _renderEditCell() {
+    const { edit } = this.state.instance;
+    const editOptions = edit.options();
+    const isEdit = editOptions.allowDeleting || editOptions.allowUpdating;
+    if (isEdit) {
+      const $td = create$('td', { role: 'gridcell', className: cn('editCell') });
+      this.view.$target.appendChild($td);
+    }
+  }
+
+  /**
+   * @private
+   */
+  private _renderGroupCells() {
     const { instance, type } = this.state;
     const { $target } = this.view;
     if (type !== 'group') return;
@@ -151,7 +181,7 @@ export default class RowElement extends Component<RowView, RowState> {
     const { type } = this.state;
     //@ts-ignore
     this.state.data = data;
-    type === 'data' ? this.renderDataCells() : this.renderGroupCells();
+    type === 'data' ? this._renderDataCells() : this._renderGroupCells();
   }
 
   compareData(data: SourceData) {

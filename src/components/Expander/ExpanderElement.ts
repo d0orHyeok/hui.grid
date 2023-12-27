@@ -13,22 +13,30 @@ export type ExpanderState = DefaultState & {
 export default class ExpanderElement extends Component<ExpanderView, ExpanderState> {
   init(): void {
     this.view.$target.classList.add('hui-grid-group-toggle');
-    this.bindToggleEvent();
+    this._bindToggleEvent();
     this.view.setIcon(this.state.data.expanded);
   }
 
-  bindToggleEvent() {
+  /**
+   * @private
+   */
+  private _bindToggleEvent() {
     const { data, instance } = this.state;
     const { store } = instance.source;
     this.view.on('click', (event) => {
-      const isExpand = !event.currentTarget.querySelector('i')?.className.includes('expand');
+      const isExpand = !event.currentTarget.querySelector('i')?.className.includes('arrow-down');
       data.expanded = isExpand;
       this.view.setIcon(isExpand);
-      this.animationToggle(isExpand, () => store.publish());
+      this._animationToggle(isExpand, () => store.publish());
     });
   }
 
-  animationToggle(isExpand: boolean, cb: Function) {
+  /**
+   * @private
+   * @param {boolean} isExpand
+   * @param {Function} cb
+   */
+  private _animationToggle(isExpand: boolean, cb: Function) {
     const $row = this.view.$target.closest<HTMLElement>(cn('.', 'row'));
     if (!$row) return;
 

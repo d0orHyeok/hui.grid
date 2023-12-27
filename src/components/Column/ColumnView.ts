@@ -17,7 +17,7 @@ export default class ColumnView extends View<HTMLTableCellElement> {
     const $el = find$('.hui-grid-column-indicators', this.$target);
     if (!$el) return;
     if (option === 'none') $el.innerHTML = '';
-    else $el.innerHTML = `<span class="hui-icon-sort-${option === 'asc' ? 'up' : 'down'}"></span>`;
+    else $el.innerHTML = `<span class="ri-sort-${option}"></span>`;
   }
 
   setTemplate(...template: any[]) {

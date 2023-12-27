@@ -20,7 +20,6 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
   const {
     align,
     allowEditing,
-    allowFiltering,
     booleanText,
     calculateCellValue,
     cellTemplate,
@@ -39,7 +38,6 @@ function createColumnInfo(column: OptColumn, data: ColumnInfoData): ColumnInfo {
     ...data,
     align: align ?? (!isUndefined(dataType) ? alignMap[dataType] : undefined),
     allowEditing,
-    allowFiltering,
     booleanText,
     calculateCellValue,
     calculateDisplayValue,

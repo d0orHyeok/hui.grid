@@ -10,6 +10,7 @@ import { HeaderElement, HeaderView } from '@/components/Header';
 import { BodyElement, BodyView } from '@/components/Body';
 import { ScrollbarElement, ScrollbarView } from './components/Scrollbar';
 import { ColGroupElement, ColGroupView } from './components/ColGroup';
+import { ToolbarElement, ToolbarView } from './components/Toolbar';
 
 interface ComponentMap {
   Header: HeaderElement;
@@ -70,6 +71,10 @@ class HuiGrid implements IHuiGrid {
       position: 'vertical',
       instance,
     });
+
+    const $toolbar = create$('div');
+    $element.insertAdjacentElement('afterbegin', $toolbar);
+    new ToolbarElement(new ToolbarView($toolbar), { instance });
 
     this.compoentMap = { Header, Body };
   }

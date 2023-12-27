@@ -1,5 +1,5 @@
 @import './reset.css';
-@import '../assets/icon/style.css';
+@import '../assets/icons/remixicon.css';
 
 .hui-hidden {
   display: none !important;
@@ -60,7 +60,7 @@
   border-left-width: 0;
 }
 
-.hui-grid .hui-grid-table td:last-child {
+.hui-grid .hui-grid-table td:not(.hui-grid-edit-cell):last-child {
   border-right-width: 0;
 }
 

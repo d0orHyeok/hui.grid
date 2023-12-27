@@ -11,6 +11,7 @@ const grid = new HuiGrid('#app', {
     { dataField: 'name', width: '120px', groupIndex: 1 },
     { caption: 'group', columns: [{ dataField: 'score' }, { dataField: 'progress', dataType: 'progress' }] },
   ],
+  edit: {},
 });
 
 const names = ['Alice', 'John', 'Simth', 'Jane', 'Brus', 'Saya', 'Minjun'];
@@ -27,3 +28,5 @@ const datas = Array.from({ length: 300 }, (_, i) => {
 });
 
 grid.setData(datas);
+
+grid.option('edit', { allowUpdating: true, mode: 'row' });

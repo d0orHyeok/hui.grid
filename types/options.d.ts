@@ -10,7 +10,7 @@ export interface OptGrid extends Partial<OptCommonColumn> {
   // columnWidth?: number | string;
   datas?: DataObject[];
   // dateFormat?: string;
-  edit?: undefined; // TODO Experimental
+  edit?: Partial<EditOption>;
   /** The index of the column that contains the focused data cell. This index is taken from the columns array. */
   focuedColumnIndex?: number;
   /** Specifies the focused data row's index. */
@@ -71,8 +71,6 @@ export interface OptColumn {
   align?: HorizontalAlign;
   /** Specifies whether a user can edit values in the column at runtime. Default: false */
   allowEditing?: boolean;
-  /** Specifies whether data can be filtered by this column. Default: true */
-  allowFiltering?: boolean;
   /** Specifies whether the user can group data by values of this column. Default: true */
   allowGrouping?: boolean;
   /** Specifies whether a user can resize the column at runtime. Applies only if allowColumnResizing is true. Default: true */
@@ -123,6 +121,14 @@ export interface OptColumn {
    */
   width?: number | string;
 }
+
+export type EditOption = {
+  allowAdding: boolean;
+  allowUpdating: boolean;
+  allowDeleting: boolean;
+  mode: 'row' | 'cell' | 'batch';
+  action: 'click' | 'dblclick';
+};
 
 export type DataType = 'string' | 'number' | 'boolean' | 'date' | 'progress';
 export type CalculateDisplayValue = (rowData: DataObject) => any;

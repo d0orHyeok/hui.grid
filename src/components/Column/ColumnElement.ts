@@ -6,6 +6,7 @@ import { isFunction, isString } from '@/utils/common';
 import { find$, on } from '@/utils/dom';
 import { cn } from '@/healpers/className';
 import { Evt } from '@t/html';
+import { effect } from '@/observable';
 
 export interface ColumnState extends DefaultState {
   columnHeaderInfo: ColumnHeaderInfo;
@@ -13,12 +14,15 @@ export interface ColumnState extends DefaultState {
 
 export default class ColumnElement extends Component<ColumnView, ColumnState> {
   init() {
-    this.renderColumn();
-    this.makeResizable();
-    this.makeSortable();
+    this._renderColumn();
+    this._makeResizable();
+    this._makeSortable();
   }
 
-  renderColumn() {
+  /**
+   * @private
+   */
+  private _renderColumn() {
     const { $target } = this.view;
     this.view.role('columnheader');
     const { columnHeaderInfo } = this.state;
@@ -32,7 +36,10 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     this.view.setTemplate(template);
   }
 
-  makeResizable() {
+  /**
+   * @private
+   */
+  private _makeResizable() {
     const { instance, columnHeaderInfo } = this.state;
     const { allowResizing, dataField } = columnHeaderInfo;
     const { column, columnCoords } = instance;
@@ -44,20 +51,19 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     if (Array.isArray(columnHeaderInfo.columns)) return $resizer.classList.add('disabled');
 
     // Sync Resizing
-    let prevColumnResizing: boolean | null = null;
-    commonColumnOpt.subscribe(({ allowColumnResizing }) => {
-      if (prevColumnResizing !== allowColumnResizing) {
-        prevColumnResizing = allowColumnResizing;
+    effect(
+      ({ allowColumnResizing }) => {
         const isResizable = allowColumnResizing ?? allowResizing ?? true;
         $resizer.classList[isResizable ? 'remove' : 'add']('disabled');
-      }
-    });
+      },
+      [commonColumnOpt],
+      ({ allowColumnResizing }) => allowColumnResizing,
+      null
+    );
 
     // Make resizable
     const groupColSize = groupColumnInfos.length;
     const columnInfoIndex = visibleColumnInfos.findIndex((item) => item.dataField === dataField);
-    const isLast = visibleColumnInfos.at(-1)?.dataField === dataField;
-    if (isLast) $resizer.style.marginRight = '2px';
 
     const $grid = $resizer.closest('.hui-grid') as HTMLElement;
     const toggle = (bol: boolean) => $grid.classList[bol ? 'add' : 'remove']('hui-grid-resizing');
@@ -83,7 +89,10 @@ export default class ColumnElement extends Component<ColumnView, ColumnState> {
     on($html, 'mousemove', onMouseMove);
   }
 
-  makeSortable() {
+  /**
+   * @private
+   */
+  private _makeSortable() {
     const { instance, columnHeaderInfo } = this.state;
     const { sorter } = instance.source;
     const { dataField, allowSorting } = columnHeaderInfo;
