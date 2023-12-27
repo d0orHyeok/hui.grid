@@ -77,6 +77,8 @@ class HuiGrid implements IHuiGrid {
     new ToolbarElement(new ToolbarView($toolbar), { instance });
 
     this.compoentMap = { Header, Body };
+
+    console.log(this.compoentMap);
   }
 
   /**

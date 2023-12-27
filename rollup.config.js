@@ -14,6 +14,12 @@ import { resolve } from 'path';
 import { __dirname, postcsssPlugins } from './options.js';
 
 const extensions = ['.ts', '.js', '.es', '.es6', '.mjs'];
+const aliasPlugin = alias({
+  entries: [
+    { find: '@/', replacement: resolve(__dirname, 'src/') },
+    { find: '@t/', replacement: resolve(__dirname, 'types/') },
+  ],
+});
 
 /** @type {import('rollup').RollupOptions[]} */
 export default [
@@ -28,6 +34,20 @@ export default [
         include: '**/*.css',
         extract: true,
         plugins: postcsssPlugins,
+        minimize: false,
+      }),
+    ],
+  },
+  {
+    input: './src/index.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [
+      aliasPlugin,
+      dts({
+        compilerOptions: {
+          baseUrl: tsc.compilerOptions.baseUrl,
+          paths: tsc.compilerOptions.paths,
+        },
       }),
     ],
   },
@@ -37,21 +57,11 @@ export default [
       {
         file: pkg.main,
         format: 'cjs',
-        sourcemap: true,
-      },
-      {
-        file: pkg.module,
-        format: 'es',
-        sourcemap: true,
+        sourcemap: false,
       },
     ],
     plugins: [
-      alias({
-        entries: [
-          { find: '@/', replacement: resolve(__dirname, 'src/') },
-          { find: '@t/', replacement: resolve(__dirname, 'types/') },
-        ],
-      }),
+      aliasPlugin,
       json(),
       nodeResolve({ extensions }),
       commonjs({ include: 'node_modules/**' }),
@@ -73,7 +83,6 @@ export default [
             },
           ],
           '@babel/preset-typescript',
-          '@babel/preset-flow',
         ],
         exclude: 'node_modules/**',
         include: 'src/**/*.(ts|js)',
@@ -82,24 +91,5 @@ export default [
       }),
     ],
     external: [/@babel\/runtime/],
-  },
-  {
-    input: 'dist/es/types/index.d.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    plugins: [
-      alias({
-        entries: [
-          { find: '@/', replacement: resolve(__dirname, 'src/') },
-          { find: '@t/', replacement: resolve(__dirname, 'types/') },
-        ],
-      }),
-      dts({
-        compilerOptions: {
-          baseUrl: tsc.compilerOptions.baseUrl,
-          paths: tsc.compilerOptions.paths,
-        },
-      }),
-    ],
-    external: [/\.css$/],
   },
 ];
