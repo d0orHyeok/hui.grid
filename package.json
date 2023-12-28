@@ -1,5 +1,5 @@
 {
-  "name": "hui-grid",
+  "name": "@janghye0k/grid",
   "private": false,
   "version": "1.0.0",
   "description": "Vanilla javascript data grid",
@@ -9,13 +9,12 @@
   "keywords": [
     "grid",
     "datagrid",
-    "vanilla",
-    "hui"
+    "vanilla"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/d0orHyeok/hui.grid.git"
+    "url": "git+https://github.com/janghye0k/grid.git"
   },
   "files": [
     "dist/",
